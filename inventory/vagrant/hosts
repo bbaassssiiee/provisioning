@@ -1,0 +1,23 @@
+[local]
+localhost ansible_ssh_host=127.0.0.1  ansible_connection=local ansible_python_interpreter=python3
+
+[all:vars]
+ansible_ssh_user=vagrant
+ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+
+[aap:children]
+database
+automationhub
+automationcontroller
+
+[database]
+192.168.56.11.nip.io
+
+[automationhub]
+192.168.56.12.nip.io
+
+[automationcontroller]
+192.168.56.11.nip.io role=primary
+
+[other]
+192.168.56.13.nip.io

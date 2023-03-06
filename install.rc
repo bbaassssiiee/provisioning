@@ -1,0 +1,6 @@
+# source this file in bash to create a Python 3 virtualenv with Ansible
+python3 -m venv ~/py3 --prompt '\[\e[31;40m\]A\[\e[m\]'
+source ~/py3/bin/activate
+python3 -m pip install --upgrade pip
+pip3 install wheel
+pip3 install -r requirements.txt

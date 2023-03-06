@@ -1,0 +1,39 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+
+  if Vagrant.has_plugin?("vagrant-vbguest")
+    config.vbguest.auto_update = false
+  end
+
+  config.ssh.insert_key = false
+  config.ssh.verify_host_key = false
+  config.vm.box_check_update = false
+  config.vm.synced_folder ".""", "/vagrant", id: "vagrant-root", disabled: true
+
+  config.vm.define 'alma8' do |srv|
+    srv.vm.box = 'alma8/efi'
+    srv.vm.hostname = 'alma8-vm'
+    srv.vm.network 'private_network', ip: '192.168.56.8'
+
+    srv.vm.provider :virtualbox do |virtualbox|
+      virtualbox.name = 'alma8-vm'
+      virtualbox.gui = false
+      virtualbox.customize ["modifyvm", :id, "--memory", 4096]
+      virtualbox.customize ["modifyvm", :id,
+        "--boot1", "disk",
+        "--boot2", "net",
+        "--boot3", "none",
+        "--boot4", "none",
+        "--audio", "none",
+        "--cpus", 2,
+        "--memory", 4096,
+        "--vrde", "on",
+        "--graphicscontroller", "VMSVGA",
+        "--vram", "128"
+      ]
+    end
+  end
+
+end

@@ -1,0 +1,14 @@
+---
+# grace_period
+tmp_mounts:
+  - { src: /dev/mapper/vgsys-lv_tmp, path: /tmp }
+  - { src: /dev/mapper/vgsys-lv_vartmp, path: /var/tmp }
+# nettime
+net_allow: []
+
+controller_hostname: 192.168.56.11.nip.io
+primary_machine: "{{ groups.automationcontroller[0] }}"
+secondary_machine: "{{ groups.automationhub[0] }}"
+registry_url: registry.redhat.com
+aap_validate_certs: false
+ansible_user: vagrant
