@@ -1,0 +1,23 @@
+---
+
+- name: Configure sslverify for package management
+  ansible.builtin.lineinfile:
+    path: /etc/dnf/dnf.conf
+    regex: '^sslverify='
+    line: "sslverify={{ sslverify }}"
+    state: present
+
+- name: Remove unneeded repo files
+  ansible.builtin.file:
+    path: "/etc/yum.repos.d/{{ item }}"
+    state: absent
+  loop: "{{ yum_repofiles_unneeded }}"
+
+- name: Point repo files to Artifactory
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "/etc/yum.repos.d/{{ item }}"
+    owner: root
+    group: root
+    mode: 0600
+  loop: "{{ yum_repofiles_needed }}"

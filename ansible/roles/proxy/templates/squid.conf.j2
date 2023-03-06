@@ -1,0 +1,71 @@
+# ----------------------------------------------------------------------
+# WARNING - do not edit this template unless you know what you are doing
+# ----------------------------------------------------------------------
+# the parent cache
+
+# performance options
+pipeline_prefetch off
+cache_miss_revalidate on
+read_ahead_gap 16 KB
+cache_replacement_policy lru
+memory_replacement_policy lru
+
+# use a different dir than stock squid and default to 10G
+cache_dir aufs /var/spool/squid 10000 16 256
+maximum_object_size 256 MB
+cache_mem 256 MB
+maximum_object_size_in_memory 64 MB
+
+# store coredumps in the first cache dir
+coredump_dir /var/spool/squid
+
+# the hostname squid displays in error messages
+visible_hostname proxy
+
+pid_filename /tmp/squid.pid
+
+# Squid listening port
+http_port 3128
+
+# Example rule allowing access from your local networks.
+# Adapt to list your (internal) IP networks from where browsing
+# should be allowed
+acl localnet src 127.0.0.1
+acl localnet src 172.0.0.0/8    # Local private
+acl localnet src 192.168.0.0/16 # RFC1918 local private network range
+acl localnet src 10.0.0.0/8     # RFC1918 link-local (directly plugged) machines
+acl localnet src fc00::/7       # RFC 4193 local private network range
+acl localnet src fe80::/10      # RFC 4291 link-local (directly plugged) machines
+
+# Access Control lists
+acl SSL_ports port 443
+acl Safe_ports port 80		# http
+acl Safe_ports port 443		# https
+acl Safe_ports port 1025-65535	# unregistered ports
+acl CONNECT method CONNECT
+
+# Only allow cachemgr access from localhost
+http_access allow localhost manager
+http_access deny manager
+
+# Deny requests to certain unsafe ports
+http_access deny !Safe_ports
+
+# Deny CONNECT to other than secure SSL ports
+http_access deny CONNECT !SSL_ports
+
+# protect web apps running on the proxy host from external users
+http_access allow to_localhost
+
+# rules for client access go here
+http_access allow localnet
+http_access allow localhost
+
+# after allowed hosts, deny all other access to this proxy
+# don't list any other access settings below this point
+http_access deny all
+
+# specify which hosts have direct access (bypassing the parent proxy)
+always_direct allow localhost
+always_direct deny all
+

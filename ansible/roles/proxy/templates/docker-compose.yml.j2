@@ -1,0 +1,16 @@
+---
+version: '2.2'
+services:
+  squid:
+    image: ubuntu/squid:edge
+    container_name: squid
+    expose:
+    - '{{ proxy_port }}'
+    ports:
+      - {{ proxy_port }}:{{ proxy_port }}/tcp
+    restart: always
+    shm_size: 64m
+    volumes:
+      - {{ proxy_data }}/cache:/var/cache/squid:rw
+      - {{ proxy_data }}/log:/var/log/squid:rw
+      - {{ proxy_data }}/squid.conf:/etc/squid/squid.conf:r0

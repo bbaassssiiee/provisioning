@@ -1,0 +1,97 @@
+---
+- name: Ensure group exists
+  group:
+    name: "{{ proxy_group }}"
+    gid: 13
+    state: present
+    system: true
+
+- name: Ensure user exists
+  user:
+    name: "{{ proxy_user }}"
+    group: "{{ proxy_group }}"
+    uid: 13
+    create_home: true
+    home: "{{ proxy_home }}"
+    state: present
+    system: true
+
+- name: Ensure cache dirs exists
+  ansible.builtin.file:
+    path: "{{ proxy_cache }}/{{ item }}"
+    state: directory
+    owner: "{{ proxy_user }}"
+    group: "{{ proxy_group }}"
+    mode: 0755
+  loop:
+    - '00'
+    - '01'
+    - '02'
+    - '03'
+    - '04'
+    - '05'
+    - '06'
+    - '07'
+    - '08'
+    - '09'
+    - '0A'
+    - '0B'
+    - '0C'
+    - '0D'
+    - '0E'
+    - '0F'
+
+- name: Ensure log dir exists
+  ansible.builtin.file:
+    path: "{{ proxy_log }}"
+    state: directory
+    owner: "{{ proxy_user }}"
+    group: "{{ proxy_group }}"
+    mode: 0755
+
+- name: Ensure podman is installed
+  ansible.builtin.package:
+    name: podman
+    state: present
+
+- name: Get service facts
+  ansible.builtin.service_facts:
+
+- name: Determine firewalld_state
+  ansible.builtin.set_fact:
+    # yamllint disable-line rule:line-length
+    firewalld_status: "{{ ansible_facts.services['firewalld.service']['status'] }}"
+
+- name: Ensure firewall is running
+  when: firewalld_status == 'enabled'
+  ansible.builtin.systemd:
+    name: firewalld
+    state: started
+
+- name: Manage proxy port in firewalld
+  ansible.posix.firewalld:
+    port: '{{ proxy_port }}/tcp'
+    permanent: true
+    state: enabled
+    immediate: true
+
+- name: Install unit file
+  ansible.builtin.template:
+    src: squid.service.j2
+    dest: "/etc/systemd/system/squid.service"
+
+- name: Enable squid
+  ansible.builtin.systemd:
+    name: squid
+    daemon_reload: true
+    enabled: true
+  notify: Restart proxy
+
+- name: Deploy squid.conf
+  ansible.builtin.template:
+    src: squid.conf.j2
+    dest: "{{ proxy_home }}/squid.conf"
+    owner: "{{ proxy_user }}"
+    group: "{{ proxy_group }}"
+  notify: Restart proxy
+

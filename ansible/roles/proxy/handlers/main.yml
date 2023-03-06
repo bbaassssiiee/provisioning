@@ -1,0 +1,16 @@
+---
+
+- name: Restart proxy
+  ansible.builtin.systemd:
+    name: squid
+    state: restarted
+  tags:
+    - start
+    - restart
+
+- name: Stop proxy
+  ansible.builtin.systemd:
+    name: squid
+    state: stopped
+  tags:
+    - stop

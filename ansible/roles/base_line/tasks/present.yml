@@ -1,0 +1,123 @@
+---
+# Tasks to reach desired state present
+# Empty  file means no device for root login
+- name: Install required packages
+  ansible.builtin.dnf:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ security_packages }}"
+
+- name: Enable authselect
+  ansible.builtin.command: "authselect select {{ authselect_profile }} --force"
+  args:
+    creates: /etc/authselect/authselect.conf
+
+- name: Create pam files
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+    owner: root
+    group: root
+  loop: "{{ pam_files }}"
+  tags:
+    - config
+
+- name: Create configuration files
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0600
+    owner: root
+    group: root
+  loop: "{{ security_conf_files }}"
+
+- name: Get service facts
+  ansible.builtin.service_facts:
+
+- name: Set firewalld_status
+  ansible.builtin.set_fact:
+    firewalld_status: "{{ ansible_facts.services['firewalld.service']['state'] }}"
+  when: ansible_facts.services['firewalld.service'] is defined
+
+- name: Ensure firewalld is running
+  when: firewalld_status is defined
+  ansible.builtin.systemd:
+    name: firewalld
+    state: started
+    enabled: true
+
+- name: Firewalld configuration ssh
+  ansible.posix.firewalld:
+    zone: drop
+    service: ssh
+    permanent: true
+    state: enabled
+    immediate: true
+
+- name: Set Default firewalld zone for incoming packets
+  ansible.builtin.lineinfile:
+    path: /etc/firewalld/firewalld.conf
+    regexp: '^DefaultZone'
+    line: 'DefaultZone=drop'
+    state: present
+  notify: Restart firewalld
+  tags:
+    - firewall
+
+- name: Set Interactive Timeout
+  ansible.builtin.copy:
+    src: tmout.sh
+    dest: /etc/profile.d/
+    mode: 0644
+
+- name: Configure SELinux context type on faillock directory
+  ansible.builtin.file:
+    path: "{{ security_faillock_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+    setype: faillog_t
+
+- name: Define default permissions for shells
+  ansible.builtin.replace:
+    path: "{{ item }}"
+    regexp: 'umask\s+\d+'
+    replace: "umask {{ security_logindefs_umask }}"
+  loop:
+    - /etc/bashrc
+    - /etc/csh.cshrc
+    - /etc/profile
+
+- name: Insert correct line to /etc/systemd/journald.conf
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/journald.conf
+    create: true
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+    insertbefore: ^# Storage
+    validate: /usr/bin/bash -n %s
+  loop:
+    - regexp: '^\s*Storage='
+      line: Storage="persistent"
+    - regexp: '^\s*Compress='
+      line: Compress="yes"
+
+- name: Create AIDE database
+  ansible.builtin.command: /usr/sbin/aide --init
+  args:
+    creates: /var/lib/aide/aide.db.new.gz
+
+- name: Backup AIDE database
+  ansible.builtin.copy:
+    remote_src: true
+    src: /var/lib/aide/aide.db.new.gz
+    dest: /var/lib/aide/aide.db.gz
+    mode: 0600
+
+- name: Create AIDE database
+  ansible.builtin.command: /usr/sbin/aide --init
+  changed_when: true
+

@@ -1,6 +1,0 @@
----
-
-- src: dockpack.base_etcd
-  name: etcd
-- src: dockpack.base_nettime
-  name: nettime

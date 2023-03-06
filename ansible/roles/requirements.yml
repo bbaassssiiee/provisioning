@@ -1,0 +1,10 @@
+---
+collections:
+  - name: ansible.posix
+  - name: community.general
+  - name: community.postgresql
+  - name: jfrog.platform
+
+roles:
+  - src: https://github.com/ansible-lockdown/RHEL8-CIS.git
+    name: RHEL8-CIS

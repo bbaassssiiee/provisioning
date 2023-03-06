@@ -1,0 +1,24 @@
+---
+- name: Get service facts
+  ansible.builtin.service_facts:
+
+- name: Determine firewalld_state
+  ansible.builtin.set_fact:
+    # yamllint disable-line rule:line-length
+    firewalld_state: "{{ ansible_facts.services['firewalld.service']['state'] }}"
+
+- name: Manage firewall (stop for now)
+  when: firewalld_state == 'running'
+  ansible.builtin.systemd:
+    name: firewalld
+    state: stopped
+    enabled: false
+#  ansible.posix.firewalld:
+#    port: '{{ item }}/tcp'
+#    permanent: true
+#    state: enabled
+#    immediate: true
+#  with_items:
+#    - 5432
+#    - 8081
+#    - 8082

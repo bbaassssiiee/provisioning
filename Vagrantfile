@@ -1,69 +1,84 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-
+# Vagrantfile for Hyper-V
 Vagrant.configure(2) do |config|
 
+  # Install required plugins
+
+  required_plugins = %w( vagrant-scp )
+  plugin_installed = false
+  required_plugins.each do |plugin|
+    unless Vagrant.has_plugin?(plugin)
+      system "vagrant plugin install #{plugin}"
+      plugin_installed = true
+    end
+  end
+
+  # If new plugins installed, restart Vagrant process
+  if plugin_installed === true
+    exec "vagrant #{ARGV.join' '}"
+  end
+
+  # Skip compiling guest additions
   if Vagrant.has_plugin?("vagrant-vbguest")
     config.vbguest.auto_update = false
   end
-  config.vm.provider "virtualbox"
+
+  # Vagrant cloud box
+  #config.vm.box = "almalinux/8"
+  # packer built box
   config.vm.box = "alma8/efi"
   config.vm.box_check_update = false
   config.ssh.insert_key = false
-  config.ssh.verify_host_key = false
-  config.hostmanager.enabled = true
-  config.hostmanager.manage_host = false
-  config.hostmanager.manage_guest = true
-  config.hostmanager.ignore_private_ip = false
-  config.hostmanager.include_offline = true
-  N = 3
-  (1..N).each do |server_id|
-    config.vm.define "alma#{server_id}" do |server|
-      server.vm.hostname = "alma#{server_id}.nip.io"
-      server.vm.network "private_network", ip: "192.168.56.1#{server_id}"
+
+  cluster = {
+    "artifactory" => { :autostart => false, :mac => "00-C0-DE-DE-C0-DE", :cpus => 4, :mem => 4096},
+    "proxy" => { :autostart => false, :mac => "00-15-5D-C0-FF-EE", :cpus => 4, :mem => 4096  },
+    "alma8" => { :autostart => true, :mac => "00-15-5D-DE-CA-FE", :cpus => 4, :mem => 4096, }
+  }
+  cluster.each_with_index do |(hostname, params), index|
+    config.vm.define hostname, autostart: params[:autostart] do |server|
+      server.vm.hostname = hostname
+      #server.vm.network "private_network", type: "dhcp", bridge: "Default Switch"
+      server.vm.network "public_network", type: "dhcp", bridge: "Wi-Fi"
       server.vm.synced_folder "/Users/Shared", "/vagrant", id: "vagrant-root", disabled: true
-      server.vm.provider "virtualbox" do |virtualbox|
-        virtualbox.name = "alma#{server_id}"
-        virtualbox.gui = false
-        # Boot order setting is ignored if EFI is enabled
-        # https://www.virtualbox.org/ticket/19364
-        virtualbox.customize ["modifyvm", :id,
-          "--audio", "none",
-          "--boot1", "disk",
-          "--boot2", "net",
-          "--boot3", "none",
-          "--boot4", "none",
-          "--cpus", 2,
-          "--firmware", "EFI",
-          "--memory", 2048,
-          "--usb", "on",
-          "--usbehci", "on",
-          "--vrde", "on",
-          "--graphicscontroller", "VMSVGA",
-          "--vram", "64"
-        ]
-        virtualbox.customize ["storageattach", :id,
-          "--device", "0",
-          "--medium", "emptydrive",
-          "--port", "1",
-          "--storagectl", "IDE Controller",
-          "--type", "dvddrive"
-        ]
+      server.vm.provider "hyperv" do |hyperv|
+        hyperv.cpus = params[:cpus]
+        hyperv.memory = params[:mem]
+        hyperv.mac = params[:mac]
+        hyperv.vmname = hostname
+        hyperv.enable_virtualization_extensions = true
+        hyperv.vm_integration_services = {
+          guest_service_interface: true,
+          heartbeat: true,
+          shutdown: true,
+          time_synchronization: true,
+        }
+        hyperv.linked_clone = true
       end
-          # Only execute once the Ansible provisioner,
-      # when all the servers are up and ready
-      if server_id == N
-        server.vm.provision :ansible do |ansible|
-          ansible.compatibility_mode = "2.0"
-          ansible.galaxy_roles_path = "roles"
-          ansible.inventory_path = "inventory"
-          # Disable default limit to connect to all the servers
-          ansible.limit = "all"
-          ansible.playbook = "vagrant-playbook.yml"
-          ansible.galaxy_role_file = "roles/requirements.yml"
-          ansible.galaxy_roles_path = "roles"
-          ansible.verbose = ""
-        end
+
+      server.vm.provision "file", source: "scripts/ansible.sh", destination: "/home/vagrant/ansible.sh"
+      server.vm.provision "shell", upload_path: "/home/vagrant/vagrant-inline", inline: "/bin/sh /home/vagrant/ansible.sh"
+      server.vm.provision "file", source: "./ansible", destination: "/home/vagrant/ansible"
+      server.vm.provision :ansible_local do |ansible|
+        ansible.compatibility_mode = "2.0"
+        ansible.extra_vars = { ansible_python_interpreter: "/usr/bin/python3" }
+        # Download dependencies
+        ansible.galaxy_role_file = "roles/requirements.yml"
+        ansible.galaxy_roles_path = "roles"
+        ansible.galaxy_command = "ansible-galaxy collection install -r %{role_file} --force && ansible-galaxy role install -p %{roles_path} -r %{role_file} --force"
+        ansible.inventory_path = "inventory"
+        ansible.playbook = "/home/vagrant/ansible/vagrant-playbook.yml"
+        ansible.provisioning_path = "/home/vagrant/ansible"
+        ansible.inventory_path = "/home/vagrant/ansible/inventory/local"
+        ansible.groups = {
+          "almalinux" => ["alma8"],
+          "artifactory_servers" => ["artifactory"],
+          "postgres_servers" => ["artifactory"],
+          "proxy" => ["proxy"]
+        }
+        ansible.galaxy_roles_path = "/home/vagrant/ansible/roles"
+        ansible.verbose = "vv"
       end
     end
   end
