@@ -62,7 +62,7 @@ build {
 
   provisioner "shell" {
     execute_command = "echo 'vagrant' | {{ .Vars }} sudo -S -E bash '{{ .Path }}'"
-    scripts         = ["scripts/vagrant.sh", "scripts/vmtools.sh", "scripts/cleanup.sh"]
+    scripts         = ["scripts/cleanup.sh"]
   }
   provisioner "ansible" {
     playbook_file = "./packer-playbook.yml"

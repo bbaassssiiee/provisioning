@@ -13,9 +13,9 @@ lint:
 
 clean: lint
 	@vagrant destroy -f
-	@ssh-keygen -R 192.168.56.11
-	@ssh-keygen -R 192.168.56.12
-	@ssh-keygen -R 192.168.56.13
+	@ssh-keygen -R 192.168.56.31
+	@ssh-keygen -R 192.168.56.32
+	@ssh-keygen -R 192.168.56.33
 	@vagrant box remove ${DISTRO}/efi || /usr/bin/true
 	@rm -rf output-${DISTRO} .vagrant
 

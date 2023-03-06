@@ -1,6 +1,8 @@
 ---
 
-- src: dockpack.base_etcd
-  name: etcd
+- src: dockpack.base_docker
+  name: docker
 - src: dockpack.base_nettime
   name: nettime
+- src: https://github.com/bbaassssiiee/RHEL8-CIS.git
+  name: RHEL8-CIS

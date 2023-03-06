@@ -16,12 +16,19 @@ Vagrant.configure(2) do |config|
   config.hostmanager.manage_guest = true
   config.hostmanager.ignore_private_ip = false
   config.hostmanager.include_offline = true
-  N = 3
+  N = 1
   (1..N).each do |server_id|
     config.vm.define "alma#{server_id}" do |server|
-      server.vm.hostname = "alma#{server_id}.nip.io"
-      server.vm.network "private_network", ip: "192.168.56.1#{server_id}"
+      server.vm.hostname = "alma#{server_id}"
+      server.vm.network "private_network", ip: "192.168.56.3#{server_id}"
       server.vm.synced_folder "/Users/Shared", "/vagrant", id: "vagrant-root", disabled: true
+      server.vm.provider "hyperv" do |hyperv|
+        hyperv.cpus = 2
+        hyperv.memory = "2048"
+        hyperv.vmname = "alma#{server_id}"
+        hyperv.enable_virtualization_extensions = true
+        hyperv.linked_clone = true
+      end
       server.vm.provider "virtualbox" do |virtualbox|
         virtualbox.name = "alma#{server_id}"
         virtualbox.gui = false
