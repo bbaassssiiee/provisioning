@@ -1,31 +1,68 @@
 ANSIBLE_DEBUG=1
 DISTRO ?= alma8
-prepare:
-	ansible-inventory --graph
-	ansible-galaxy install -p roles -f -r roles/requirements.yml
-	ansible-galaxy collection install -r collections/requirements.yml
-	ansible-playbook --syntax-check vagrant-playbook.yml
-	ansible-lint vagrant-playbook.yml
 
 lint:
 	vagrant validate
+	ansible-inventory --graph
+	ansible-playbook --syntax-check ansible/vagrant-playbook.yml
+	ansible-playbook --syntax-check ansible/packer-playbook.yml
+	ansible-lint ansible
 	packer validate ${DISTRO}.pkr.hcl
 
-clean: lint
+prepare:
+	ansible-galaxy install -p ansible/roles -f -r ansible/roles/requirements.yml
+	ansible-galaxy collection install -r ansible/roles/requirements.yml
+	packer init --upgrade ${DISTRO}.pkr.hcl
+
+clean:
 	@vagrant destroy -f
 	@ssh-keygen -R 192.168.56.31
 	@ssh-keygen -R 192.168.56.32
 	@ssh-keygen -R 192.168.56.33
-	@vagrant box remove ${DISTRO}/efi || /usr/bin/true
+	@vagrant box remove alma8/efi || /usr/bin/true
 	@rm -rf output-${DISTRO} .vagrant
 
-output-${DISTRO}/${DISTRO}.box:
-	packer build ${DISTRO}.pkr.hcl
+.PHONY: firewall
+firewall:
+	PowerShell 'New-NetFirewallRule -DisplayName "Packer_http_server" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8000-9000'
 
-box: output-${DISTRO}/${DISTRO}.box
-	vagrant box add --force --name ${DISTRO}/efi output-${DISTRO}/${DISTRO}.box
+# Install packer
+.PHONY: packer
+packer:
+	choco install packer --version=1.8.4 -y
+	packer init --upgrade ${DISTRO}.pkr.hcl
 
-image: output-${DISTRO}/${DISTRO}.box
+# Create image for Hyper-V
+.PHONY: hyperv-image
+hyperv-image:
+	packer build --only hyperv-iso.alma8 ${DISTRO}.pkr.hcl
+output-${DISTRO}/${DISTRO}.x86_64.hyperv.box:
+	packer build --only hyperv-iso.alma8 ${DISTRO}.pkr.hcl
 
-all: clean box
+# Create image for VirtualBox
+.PHONY: virtualbox-image
+virtualbox-image:
+	packer build --only virtualbox-iso.alma8 ${DISTRO}.pkr.hcl
+output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box:
+	packer build --only virtualbox-iso.alma8 ${DISTRO}.pkr.hcl
+
+# Load hyperv image into Vagrant
+.PHONY: hyperv-box
+hyperv-box: output-${DISTRO}/${DISTRO}.x86_64.hyperv.box
+	vagrant box add --provider hyperv --name alma8/efi output-${DISTRO}/${DISTRO}.x86_64.hyperv.box
+
+# Load virtualbox image into Vagrant
+.PHONY: virtualbox-box
+virtualbox-box: output-${DISTRO}/${DISTRO}.box
+	vagrant box add --provider virtualbox --name alma8/efi output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box
+
+# Start VM with vagrant
+vagrant-up:
 	vagrant up
+
+# Create image for Azure
+.PHONY: azure-image
+azure:-image
+	packer build --only azure-arm.alma8 ${DISTRO}.pkr.hcl
+
+all: clean hyperv-box vagrant-up

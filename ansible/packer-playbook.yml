@@ -1,16 +1,16 @@
 #!/usr/bin/env ansible-playbook
 ---
 
-- name: Provision VM
-  hosts: all:!localhost
+- name: Hardening
+  hosts: all
   become: true
   gather_facts: true
-  collections: community.general
 
   vars:
     rhel8cis_rule_5_3_4: false
 
   roles:
-    #  - docker
+    - openssh
     - RHEL8-CIS
+
 ...

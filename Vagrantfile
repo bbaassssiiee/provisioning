@@ -8,23 +8,19 @@ Vagrant.configure(2) do |config|
   end
   config.vm.provider "virtualbox"
   config.vm.box = "alma8/efi"
+  #config.vm.box_download_insecure = true
   config.vm.box_check_update = false
   config.ssh.insert_key = false
   config.ssh.verify_host_key = false
-  config.hostmanager.enabled = true
-  config.hostmanager.manage_host = false
-  config.hostmanager.manage_guest = true
-  config.hostmanager.ignore_private_ip = false
-  config.hostmanager.include_offline = true
   N = 1
   (1..N).each do |server_id|
     config.vm.define "alma#{server_id}" do |server|
       server.vm.hostname = "alma#{server_id}"
-      server.vm.network "private_network", ip: "192.168.56.3#{server_id}"
+      server.vm.network "private_network", type: "dhcp", bridge: "Default Switch"
       server.vm.synced_folder "/Users/Shared", "/vagrant", id: "vagrant-root", disabled: true
       server.vm.provider "hyperv" do |hyperv|
-        hyperv.cpus = 2
-        hyperv.memory = "2048"
+        hyperv.cpus = 4
+        hyperv.memory = "4096"
         hyperv.vmname = "alma#{server_id}"
         hyperv.enable_virtualization_extensions = true
         hyperv.linked_clone = true
@@ -40,9 +36,9 @@ Vagrant.configure(2) do |config|
           "--boot2", "net",
           "--boot3", "none",
           "--boot4", "none",
-          "--cpus", 2,
+          "--cpus", 4,
           "--firmware", "EFI",
-          "--memory", 2048,
+          "--memory", 4096,
           "--usb", "on",
           "--usbehci", "on",
           "--vrde", "on",
@@ -60,15 +56,22 @@ Vagrant.configure(2) do |config|
           # Only execute once the Ansible provisioner,
       # when all the servers are up and ready
       if server_id == N
-        server.vm.provision :ansible do |ansible|
+        server.vm.provision "file", source: "scripts/ansible.sh", destination: "/home/vagrant/ansible.sh"
+        server.vm.provision "shell", upload_path: "/home/vagrant/vagrant-inline", inline: "/bin/sh /home/vagrant/ansible.sh"
+        server.vm.provision "file", source: "./ansible", destination: "/home/vagrant/ansible"
+        server.vm.provision :ansible_local do |ansible|
           ansible.compatibility_mode = "2.0"
-          ansible.galaxy_roles_path = "roles"
-          ansible.inventory_path = "inventory"
-          # Disable default limit to connect to all the servers
-          ansible.limit = "all"
-          ansible.playbook = "vagrant-playbook.yml"
+          ansible.extra_vars = { ansible_python_interpreter: "/usr/bin/python3" }
           ansible.galaxy_role_file = "roles/requirements.yml"
           ansible.galaxy_roles_path = "roles"
+          ansible.galaxy_command = "ansible-galaxy collection install -r %{role_file} --force && ansible-galaxy role install -p %{roles_path} -r %{role_file} --force"
+          ansible.inventory_path = "inventory"
+          # Disable default limit to connect to all the servers
+          ansible.limit = "alma1"
+          ansible.playbook = "/home/vagrant/ansible/vagrant-playbook.yml"
+          ansible.provisioning_path = "/home/vagrant/ansible"
+          ansible.inventory_path = "/home/vagrant/ansible/inventory/local"
+          ansible.galaxy_roles_path = "/home/vagrant/ansible/roles"
           ansible.verbose = ""
         end
       end

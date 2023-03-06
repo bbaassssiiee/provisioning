@@ -1,6 +1,0 @@
----
-# grace_period
-tmp_mounts:
-  - { src: /dev/mapper/vgsys-lv_tmp, path: /tmp }
-  - { src: /dev/mapper/vgsys-lv_vartmp, path: /var/tmp }
-ansible_user: vagrant

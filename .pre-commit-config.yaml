@@ -37,3 +37,6 @@ repos:
     rev: 2.1.5  # or specific git tag
     hooks:
       - id: shellcheck
+        args: [ --severity, "error" ]
+        exclude: "^.git"
+        files: "\\.sh$"

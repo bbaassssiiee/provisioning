@@ -1,0 +1,28 @@
+---
+# base_nettime
+chrony_key: '2712 SHA256 HEX:2508AB8ACAB314398B4220A3814591DD4F0E468B2124658262E37CACED70CE3D'
+net_allow:
+  - 192.168.56.0/24
+ntp_zone: .nl
+
+ansible_user: vagrant
+docker_users:
+  - vagrant
+
+artifactory_enabled: true
+postgres_enabled: true
+artifactory_db_type: postgresql
+artifactory_db_driver: org.postgresql.Driver
+artifactory_db_name: artifactory
+artifactory_db_user: artifactory_db_user
+artifactory_db_password: artifactory_db_password
+artifactory_db_url: "jdbc:postgresql://{{ groups.postgres_servers[0] }}:5432/{{ artifactory_db_name }}"
+
+# Postgresql users and databases/schemas
+database:
+  artifactory:
+    name: "{{ artifactory_db_name }}"
+    owner: "{{ artifactory_db_user }}"
+    username: "{{ artifactory_db_user }}"
+    password: "{{ artifactory_db_password }}"
+    enabled: "{{ artifactory_enabled }}"

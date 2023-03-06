@@ -5,7 +5,8 @@
 /boot/
 /etc/
 .pytest_cache
-output-rhel8/
-roles/*
+output-alma8/
+packer_cache/
+ansible/roles/*
 files/
 collections/

@@ -1,0 +1,15 @@
+[local]
+alma1 ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpreter=python3
+
+[local:vars]
+ansible_ssh_user=vagrant
+
+[local:children]
+artifactory_servers
+postgres_servers
+
+[artifactory_servers]
+alma1 ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpreter=python3
+
+[postgres_servers]
+alma1 ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpreter=python3
