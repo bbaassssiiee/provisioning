@@ -23,6 +23,12 @@ Vagrant.configure(2) do |config|
         hyperv.memory = "4096"
         hyperv.vmname = "alma#{server_id}"
         hyperv.enable_virtualization_extensions = true
+        hyperv.vm_integration_services = {
+          guest_service_interface: true,
+          heartbeat: true,
+          shutdown: true,
+          time_synchronization: true,
+        }
         hyperv.linked_clone = true
       end
       server.vm.provider "virtualbox" do |virtualbox|

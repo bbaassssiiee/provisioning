@@ -1,32 +1,34 @@
-#!/usr/bin/env ansible-playbook
+#!/usr/bin/env ansible-playbook -K
 ---
 
-- name: Deploy Postgres
-  hosts: postgres_servers
-  collections:
-    - community.postgresql
-    - community.general
-    - jfrog.platform
-  tags:
-    - postgres
-  roles:
-    - role: postgres
-      when: postgres_enabled | bool
-
-- name: Deploy Artifactory
-  hosts: artifactory_servers
+- name: Security Audit
+  hosts: all
   become: true
   gather_facts: true
-  collections:
-    - community.general
-    - jfrog.platform
-  tags:
-    - deploy
-  serial:
-    - 1
-    - 100%
-  roles:
-    - role: firewall
-    - role: artifactory
-      when: artifactory_enabled | bool
-...
+
+  pre_tasks:
+  
+    - name: Install packages
+      ansible.builtin.package:
+        state: present
+        name:
+          - openscap-scanner
+          - scap-security-guide
+
+  post_tasks:
+
+    - name: Run the audit and create a report.
+      ansible.builtin.command:
+        oscap xccdf eval \
+          --report /tmp/report.html
+          --profile cis
+          /usr/share/xml/scap/ssg/content/ssg-almalinux8-ds.xml
+      changed_when: true
+      no_log: false
+      ignore_errors: true
+
+    - name: Set permissions
+      ansible.builtin.file:
+        path: /tmp/report.html
+        owner: "{{ ansible_ssh_user }}"
+        mode: '0600'

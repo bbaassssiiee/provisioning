@@ -1,0 +1,32 @@
+#!/usr/bin/env ansible-playbook
+---
+
+- name: Deploy Postgres
+  hosts: postgres_servers
+  collections:
+    - community.postgresql
+    - community.general
+    - jfrog.platform
+  tags:
+    - postgres
+  roles:
+    - role: postgres
+      when: postgres_enabled | bool
+
+- name: Deploy Artifactory
+  hosts: artifactory_servers
+  become: true
+  gather_facts: true
+  collections:
+    - community.general
+    - jfrog.platform
+  tags:
+    - deploy
+  serial:
+    - 1
+    - 100%
+  roles:
+    - role: firewall
+    - role: artifactory
+      when: artifactory_enabled | bool
+...
