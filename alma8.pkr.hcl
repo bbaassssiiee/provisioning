@@ -89,9 +89,13 @@ source "hyperv-iso" "alma8" {
   cpus                   = 2
   disk_size              = 65536
   disk_block_size        = 1
+  enable_secure_boot     = true
+  enable_mac_spoofing    = true
+  secure_boot_template   = "MicrosoftUEFICertificateAuthority"
   generation             = 2
   headless               = true
   http_directory         = "kickstart"
+  keep_registered        = true
   iso_checksum           = "${var.iso_checksum}"
   iso_urls               = ["${var.iso_url1}", "${var.iso_url2}"]
   memory                 = 2048
