@@ -3,15 +3,29 @@
 
 Vagrant.configure(2) do |config|
 
+  # Install required plugins
+  required_plugins = %w( vagrant-scp )
+  plugin_installed = false
+  required_plugins.each do |plugin|
+    unless Vagrant.has_plugin?(plugin)
+      system "vagrant plugin install #{plugin}"
+      plugin_installed = true
+    end
+  end
+
+  # If new plugins installed, restart Vagrant process
+  if plugin_installed === true
+    exec "vagrant #{ARGV.join' '}"
+  end
+
+  # Skip compiling guest additions
   if Vagrant.has_plugin?("vagrant-vbguest")
     config.vbguest.auto_update = false
   end
-  config.vm.provider "virtualbox"
+
   config.vm.box = "alma8/efi"
-  #config.vm.box_download_insecure = true
   config.vm.box_check_update = false
   config.ssh.insert_key = false
-  config.ssh.verify_host_key = false
   N = 1
   (1..N).each do |server_id|
     config.vm.define "alma#{server_id}" do |server|
@@ -33,6 +47,7 @@ Vagrant.configure(2) do |config|
       end
       server.vm.provider "virtualbox" do |virtualbox|
         virtualbox.name = "alma#{server_id}"
+        virtualbox.linked_clone = true
         virtualbox.gui = false
         # Boot order setting is ignored if EFI is enabled
         # https://www.virtualbox.org/ticket/19364
@@ -59,7 +74,8 @@ Vagrant.configure(2) do |config|
           "--type", "dvddrive"
         ]
       end
-          # Only execute once the Ansible provisioner,
+
+      # Only execute once the Ansible provisioner,
       # when all the servers are up and ready
       if server_id == N
         server.vm.provision "file", source: "scripts/ansible.sh", destination: "/home/vagrant/ansible.sh"
@@ -68,17 +84,17 @@ Vagrant.configure(2) do |config|
         server.vm.provision :ansible_local do |ansible|
           ansible.compatibility_mode = "2.0"
           ansible.extra_vars = { ansible_python_interpreter: "/usr/bin/python3" }
+          # Download dependencies
           ansible.galaxy_role_file = "roles/requirements.yml"
           ansible.galaxy_roles_path = "roles"
           ansible.galaxy_command = "ansible-galaxy collection install -r %{role_file} --force && ansible-galaxy role install -p %{roles_path} -r %{role_file} --force"
           ansible.inventory_path = "inventory"
-          # Disable default limit to connect to all the servers
-          ansible.limit = "alma1"
+          ansible.limit = "all"
           ansible.playbook = "/home/vagrant/ansible/vagrant-playbook.yml"
           ansible.provisioning_path = "/home/vagrant/ansible"
           ansible.inventory_path = "/home/vagrant/ansible/inventory/local"
           ansible.galaxy_roles_path = "/home/vagrant/ansible/roles"
-          ansible.verbose = ""
+          ansible.verbose = "vv"
         end
       end
     end

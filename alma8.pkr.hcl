@@ -93,6 +93,7 @@ source "hyperv-iso" "alma8" {
   enable_mac_spoofing    = true
   secure_boot_template   = "MicrosoftUEFICertificateAuthority"
   generation             = 2
+  guest_additions_mode   = "disable"
   headless               = true
   http_directory         = "kickstart"
   keep_registered        = true
@@ -134,13 +135,14 @@ source "virtualbox-iso" "alma8" {
   iso_checksum           = "${var.iso_checksum}"
   iso_interface          = "ide"
   iso_urls               = ["${var.iso_url1}", "${var.iso_url2}"]
+  keep_registered        = true
   memory                 = 4096
   nested_virt            = true
+  rtc_time_base          = "UTC"
   shutdown_command       = "echo 'vagrant' | sudo -S /sbin/halt -h -p"
   ssh_password           = "vagrant"
   ssh_username           = "vagrant"
   ssh_wait_timeout       = "10000s"
-  rtc_time_base          = "UTC"
   usb                    = true
   vboxmanage = [
     [ "modifyvm", "{{.Name}}", "--firmware", "EFI" ],

@@ -53,16 +53,25 @@ hyperv-box: output-${DISTRO}/${DISTRO}.x86_64.hyperv.box
 
 # Load virtualbox image into Vagrant
 .PHONY: virtualbox-box
-virtualbox-box: output-${DISTRO}/${DISTRO}.box
+virtualbox-box: output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box
 	vagrant box add --provider virtualbox --name alma8/efi output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box
 
 # Start VM with vagrant
 vagrant-up:
-	vagrant up
+	vagrant validate
+	vagrant box list
+	vagrant up --no-provision
+	vagrant provision
+	vagrant scp :/tmp/report.html .
 
 # Create image for Azure
 .PHONY: azure-image
 azure:-image
 	packer build --only azure-arm.alma8 ${DISTRO}.pkr.hcl
 
-all: clean hyperv-box vagrant-up
+.PHONY: hyperv
+hyperv: clean hyperv-box vagrant-up
+	vagrant scp :/tmp/report.html .
+
+.PHONY: virtualbox
+virtualbox: clean virtualbox-box vagrant-up

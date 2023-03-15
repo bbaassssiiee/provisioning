@@ -7,7 +7,7 @@
   gather_facts: true
 
   pre_tasks:
-  
+
     - name: Install packages
       ansible.builtin.package:
         state: present

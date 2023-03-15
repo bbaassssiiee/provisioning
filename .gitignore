@@ -9,4 +9,4 @@ output-alma8/
 packer_cache/
 ansible/roles/*
 files/
-collections/
+report.html
