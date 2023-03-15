@@ -38,7 +38,7 @@ Vagrant.configure(2) do |config|
         hyperv.vmname = "alma#{server_id}"
         hyperv.enable_virtualization_extensions = true
         hyperv.vm_integration_services = {
-          guest_service_interface: true,
+          guest_service_interface: false,
           heartbeat: true,
           shutdown: true,
           time_synchronization: true,
