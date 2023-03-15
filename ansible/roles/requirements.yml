@@ -1,14 +1,12 @@
 ---
 collections:
-  - name: jfrog.platform
   - name: ansible.posix
   - name: community.general
-  - name: community.postgresql
+  #  - name: jfrog.platform
+  #- name: community.postgresql
 
 roles:
-  - src: geerlingguy.docker
-    name: docker
-  - src: https://github.com/bbaassssiiee/RHEL8-CIS.git
+  - src: https://github.com/ansible-lockdown/RHEL8-CIS.git
     name: RHEL8-CIS
-  - src: https://github.com/bbaassssiiee/ansible_role_ssh.git
+  - src: https://github.com/ansiblebook/ansible_role_ssh.git
     name: openssh
