@@ -18,9 +18,6 @@ clean:
 	@vagrant destroy -f
 	@vagrant box remove alma8/efi || /usr/bin/true
 	@rm -rf output-${DISTRO} .vagrant
-	@ssh-keygen -R 192.168.56.31
-	@ssh-keygen -R 192.168.56.32
-	@ssh-keygen -R 192.168.56.33
 
 .PHONY: firewall
 firewall:
