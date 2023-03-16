@@ -30,7 +30,8 @@ Vagrant.configure(2) do |config|
   (1..N).each do |server_id|
     config.vm.define "alma#{server_id}" do |server|
       server.vm.hostname = "alma#{server_id}"
-      server.vm.network "private_network", type: "dhcp", bridge: "Default Switch"
+      #server.vm.network "private_network", type: "dhcp", bridge: "Default Switch"
+      server.vm.network "public_network", type: "dhcp", bridge: "Bridge"
       server.vm.synced_folder "/Users/Shared", "/vagrant", id: "vagrant-root", disabled: true
       server.vm.provider "hyperv" do |hyperv|
         hyperv.cpus = 4

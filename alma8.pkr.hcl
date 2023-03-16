@@ -99,6 +99,7 @@ source "hyperv-iso" "alma8" {
   keep_registered        = true
   iso_checksum           = "${var.iso_checksum}"
   iso_urls               = ["${var.iso_url1}", "${var.iso_url2}"]
+  mac_address            = "00c0dedec0de"
   memory                 = 2048
   shutdown_command       = "echo 'vagrant' | sudo -S shutdown -P now"
   shutdown_timeout       = "30m"
@@ -146,6 +147,8 @@ source "virtualbox-iso" "alma8" {
   usb                    = true
   vboxmanage = [
     [ "modifyvm", "{{.Name}}", "--firmware", "EFI" ],
+    [ "modifyvm", "{{.Name}}", "--macaddress1", "auto" ],
+    [ "modifyvm", "{{.Name}}", "--macaddress2", "00c0dedec0de" ],
     [ "modifyvm", "{{.Name}}", "--usbehci", "on" ],
   ]
   virtualbox_version_file= ".vbox_version"
