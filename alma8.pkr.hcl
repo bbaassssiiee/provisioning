@@ -106,7 +106,7 @@ source "hyperv-iso" "alma8" {
   ssh_password           = "vagrant"
   ssh_username           = "vagrant"
   ssh_wait_timeout       = "10000s"
-  switch_name            = "Bridge"
+  switch_name            = "Wi-Fi"
   vm_name                = "alma8-vm"
   vlan_id                = ""
 }

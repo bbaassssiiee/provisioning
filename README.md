@@ -55,7 +55,7 @@ Alternatively you could customize almalinux/8 yourself (with Hashicorp Packer) t
 Install Packer from a [download from HashiCorp](https://developer.hashicorp.com/packer/downloads), or with:
 
 ```PowerShell
-	choco install packer --version=1.8.4 -y 
+	choco install packer --version=1.8.4 -y
 	packer init --upgrade alma8.pkr.hcl
 ```
 
@@ -65,7 +65,7 @@ To properly construct a virtual switch in Hyper-V for working with Packer, follo
 
 1. Open the Hyper-V Manager console and click on the Virtual Switch Manager option in the Actions pane.
 1. Select the External option, and then click on Create Virtual Switch.
-1. Name your virtual switch 'Bridge' and select the physical network adapter that will be used for the external network.
+1. Name your virtual switch 'Wi-Fi' and select the physical network adapter that will be used for the external network.
 
 Click on OK to create the virtual switch.
 

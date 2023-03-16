@@ -2,8 +2,11 @@
 # base_nettime
 chrony_key: '2712 SHA256 HEX:2508AB8ACAB314398B4220A3814591DD4F0E468B2124658262E37CACED70CE3D'
 net_allow:
-  - 192.168.56.0/24
+  - 192.168.178.0/24
 ntp_zone: .nl
+
+# RHEL8-CIS prescribes the DEFAULT crypto-policy.
+crypto_policy: DEFAULT
 
 ansible_user: vagrant
 docker_users:
