@@ -8,6 +8,7 @@
 
   vars:
     rhel8cis_rule_5_3_4: false
+    crypto_policy: DEFAULT
 
   roles:
     - RHEL8-CIS
