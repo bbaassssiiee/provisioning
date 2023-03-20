@@ -10,14 +10,14 @@ read_ahead_gap 16 KB
 cache_replacement_policy lru
 memory_replacement_policy lru
 
-# use a different dir than stock squid and default to 40G
-cache_dir aufs /var/cache/squid 40000 16 256
+# use a different dir than stock squid and default to 10G
+cache_dir aufs /var/spool/squid 10000 16 256
 maximum_object_size 256 MB
 cache_mem 256 MB
 maximum_object_size_in_memory 64 MB
 
 # store coredumps in the first cache dir
-coredump_dir /var/cache/squid
+coredump_dir /var/spool/squid
 
 # the hostname squid displays in error messages
 visible_hostname proxy

@@ -1,14 +1,19 @@
 [Unit]
+# https://hub.docker.com/r/ubuntu/squid
 Description=Squid Proxy Server
 After=network.target syslog.target
 
 [Service]
 Type=simple
 TimeoutStartSec=5m
-ExecStartPre=-/usr/bin/podman rm "squid-proxy"
+ExecStartPre=-/usr/bin/podman stop %n
+ExecStartPre=-/usr/bin/podman rm %n
 
-ExecStart=/usr/bin/podman run --name squid-proxy -p 3128:3128/tcp \
-        -v /home/squid/squid.conf:/etc/squid/squid.conf:ro \
+ExecStart=/usr/bin/podman run --rm --name squid-proxy -p 3128:3128 \
+        -e TZ=UTC \
+        -v {{ proxy_home }}/squid.conf:/etc/squid/squid.conf:z \
+        -v {{ proxy_cache }}:/var/spool/squid:Z \
+        -v {{ proxy_log }}:/var/log/squid:Z \
         ubuntu/squid
 
 ExecReload=-/usr/bin/podman stop "squid-proxy"

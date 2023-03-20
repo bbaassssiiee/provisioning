@@ -79,4 +79,5 @@
     - configure
   roles:
     - role: artifactory_config
+
 ...

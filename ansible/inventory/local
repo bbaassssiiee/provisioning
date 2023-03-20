@@ -1,6 +1,4 @@
 [local]
-proxy ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpreter=python3
-artifactory ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpreter=python3
 
 [local:vars]
 ansible_ssh_user=vagrant
@@ -9,7 +7,10 @@ ansible_ssh_user=vagrant
 artifactory_servers
 postgres_servers
 almalinux
-proxy
+proxy_servers
+
+[proxy_servers]
+proxy ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpreter=python3
 
 [artifactory_servers]
 artifactory ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpreter=python3
