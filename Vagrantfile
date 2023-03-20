@@ -30,8 +30,8 @@ Vagrant.configure(2) do |config|
 
   cluster = {
     "artifactory" => { :autostart => false, :mac => "00-C0-DE-DE-C0-DE", :cpus => 4, :mem => 4096, :port => 8081},
-    "proxy" => { :autostart => true, :mac => "00-15-5D-C0-FF-EE", :cpus => 4, :mem => 4096 , :port => 3128 },
-    "alma8" => { :autostart => false, :mac => "00-15-5D-DE-CA-FE", :cpus => 4, :mem => 4096, :port => 8080 }
+    "proxy" => { :autostart => false, :mac => "00-15-5D-C0-FF-EE", :cpus => 4, :mem => 4096 , :port => 3128 },
+    "alma8" => { :autostart => true, :mac => "00-15-5D-DE-CA-FE", :cpus => 4, :mem => 4096, :port => 5432 }
   }
   cluster.each_with_index do |(hostname, params), index|
     config.vm.define hostname, autostart: params[:autostart] do |server|
@@ -59,6 +59,7 @@ Vagrant.configure(2) do |config|
         virtualbox.name = hostname
         virtualbox.linked_clone = true
         virtualbox.gui = false
+        virtualbox.default_nic_type = "82540em"
         # Boot order setting is ignored if EFI is enabled
         # https://www.virtualbox.org/ticket/19364
         virtualbox.customize ["modifyvm", :id,

@@ -1,0 +1,10 @@
+# defaults file for base_line
+---
+desired_state: present
+verify_state: false
+authselect_profile: minimal
+
+system_users:
+  - name: root
+    password_expire_max: 365
+    password_expire_min: 7

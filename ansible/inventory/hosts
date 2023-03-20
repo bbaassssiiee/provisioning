@@ -10,10 +10,10 @@ artifactory_servers
 postgres_servers
 
 [artifactory_servers]
-alma1 ansible_host=192.168.56.31
+alma8 ansible_host=192.168.56.31
 
 [postgres_servers]
-alma1 ansible_host=192.168.56.31
+alma8 ansible_host=192.168.56.31
 
 [all]
 alma2 ansible_host=192.168.56.32

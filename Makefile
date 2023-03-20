@@ -32,16 +32,16 @@ packer:
 # Create image for Hyper-V
 .PHONY: hyperv-image
 hyperv-image:
-	packer build --only hyperv-iso.alma8 ${DISTRO}.pkr.hcl
+	packer build -force --only hyperv-iso.alma8 ${DISTRO}.pkr.hcl
 output-${DISTRO}/${DISTRO}.x86_64.hyperv.box:
-	packer build --only hyperv-iso.alma8 ${DISTRO}.pkr.hcl
+	packer build -force --only hyperv-iso.alma8 ${DISTRO}.pkr.hcl
 
 # Create image for VirtualBox
 .PHONY: virtualbox-image
 virtualbox-image:
-	packer build --only virtualbox-iso.alma8 ${DISTRO}.pkr.hcl
+	packer build -force --only virtualbox-iso.alma8 ${DISTRO}.pkr.hcl
 output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box:
-	packer build --only virtualbox-iso.alma8 ${DISTRO}.pkr.hcl
+	packer build -force --only virtualbox-iso.alma8 ${DISTRO}.pkr.hcl
 
 # Load hyperv image into Vagrant
 .PHONY: hyperv-box
@@ -72,3 +72,4 @@ hyperv: hyperv-box vagrant-up
 
 .PHONY: virtualbox
 virtualbox: clean virtualbox-box vagrant-up
+	vagrant scp :/tmp/report.html .

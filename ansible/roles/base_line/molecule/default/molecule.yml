@@ -1,0 +1,38 @@
+---
+# molecule test settings
+# https://molecule.readthedocs.io/en/latest/faq.html
+scenario:
+  name: default
+  test_sequence:
+    - lint
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - side_effect
+    - verify
+    - destroy
+
+driver:
+  name: vagrant
+
+platforms:
+  - name: almalinux8
+    box: almalinux/8
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      interpreter_python: auto_silent
+      callbacks_enabled: profile_tasks, timer, yaml
+      stdout_callback: yaml
+
+lint: |
+  set -e
+  yamllint .
+  ansible-lint
+
+verifier:
+  name: ansible

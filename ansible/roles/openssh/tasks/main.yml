@@ -1,0 +1,141 @@
+---
+# yamllint disable rule:line-length
+- name: Setup
+  ansible.builtin.setup:
+
+- name: Print out operating system details
+  ansible.builtin.debug:
+    msg: >-
+      os_family:
+      {{ ansible_os_family }},
+      distro_version:
+      {{ ansible_distribution }}{{ ansible_distribution_major_version }}
+
+- name: Set distro_version
+  ansible.builtin.set_fact:
+    distro_version: "{{ ansible_distribution }}{{ ansible_distribution_major_version }}"
+
+- name: Install SSH server
+  ansible.builtin.package:
+    name: openssh-server
+    state: present
+    update_cache: true
+
+- name: Ensure privilege separation directory exists
+  when: ansible_os_family == 'Debian'
+  ansible.builtin.file:
+    path: /run/sshd
+    state: directory
+    mode: 0750
+
+- name: "Fedora {{ crypto_policy }} crypto policy"
+  when: ansible_distribution == 'Fedora'
+  ansible.builtin.include_tasks: crypto_policy.yml
+
+- name: "Update {{ crypto_policy }} crypto policy"
+  when: distro_version in [ 'RedHat8', 'CentOS8', 'AlmaLinux8', 'Ubuntu20', 'Rocky8']
+  ansible.builtin.include_tasks: crypto_policy.yml
+
+- name: Check if /etc/ssh/moduli contains weak Diffie-Hellman parameters
+  ansible.builtin.shell: awk '$5 < {{ min_dh_size }}' /etc/ssh/moduli
+  register: sshd_register_moduli
+  changed_when: false
+  check_mode: false
+
+- name: Deactivate short Diffie-Hellman moduli
+  when: sshd_register_moduli.stdout
+  ansible.builtin.shell: "awk '$5 >= {{ min_dh_size }}' /etc/ssh/moduli > /etc/ssh/moduli.tmp && mv -f /etc/ssh/moduli.tmp /etc/ssh/moduli"
+
+- name: Harden SSH configuration
+  ansible.builtin.lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  loop:
+    - regexp: '^(#)?Banner'
+      line: 'Banner /etc/issue'
+    - regexp: '^(#)?IgnoreRhosts'
+      line: 'IgnoreRhosts yes'
+    - regexp: '^(#)?LoginGraceTime'
+      line: "LoginGraceTime 60"
+    - regexp: '^(#)?LogLevel'
+      line: 'LogLevel VERBOSE'
+    - regexp: '^(#)?X11Forwarding'
+      line: 'X11Forwarding no'
+    - regexp: '^(#)?AllowTcpForwarding'
+      line: "AllowTcpForwarding {{ allow_tcp_forwarding }}"
+    - regexp: '^(#)?MaxAuthTries \d'
+      line: 'MaxAuthTries 4'
+    - regexp: '^(#)?MaxSessions'
+      line: "MaxSessions 10"
+  notify: Restart sshd
+
+- name: Apply STRICT hardening for sshd
+  when:
+    - crypto_policy == 'STRICT'
+    - distro_version in [ 'RedHat8', 'CentOS8', 'AlmaLinux8', 'Debian11', 'Rocky8']
+  ansible.builtin.include_tasks: "strict_config.yml"
+
+- name: Apply STRICT hardening for sshd
+  when:
+    - crypto_policy == 'STRICT'
+    - distro_version not in [ 'RedHat8', 'CentOS8', 'AlmaLinux8', 'Debian11', 'Rocky8']
+  ansible.builtin.include_tasks: sshd_crypto.yml
+
+- name: Create login banner
+  ansible.builtin.copy:
+    src: issue
+    dest: /etc/issue
+    mode: 0644
+
+- name: Manage ed25519 host key
+  block:
+    - name: Check the ed25519 host key
+      ansible.builtin.stat:
+        path: /etc/ssh/ssh_host_ed25519_key
+      register: ed25519
+
+    - name: Generate ed25519 host key
+      ansible.builtin.systemd:
+        name: sshd-keygen@ed25519.service
+        state: started
+        masked: false
+        enabled: true
+      when:
+        - not ed25519.stat.exists|bool
+      notify: Restart sshd
+
+    - name: Set host key permissions
+      ansible.builtin.file:
+        path: /etc/ssh/ssh_host_ed25519_key
+        mode: 0600
+
+    - name: Configure ed25519 host key
+      ansible.builtin.lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: '^HostKey /etc/ssh/ssh_host_ed25519_key'
+        line: 'HostKey /etc/ssh/ssh_host_ed25519_key'
+        mode: 0600
+        state: present
+      notify: Restart sshd
+  when: crypto_policy == 'STRICT'
+
+- name: Disable weak host keys
+  when:
+    - crypto_policy == 'STRICT'
+    - weak_host_keys|length >= 1
+  include_tasks: weak_keys.yml
+  loop: "{{ weak_host_keys }}"
+
+# See http://bada55.cr.yp.to/
+- name: Remove ed25519 host key in FIPS mode
+  ansible.builtin.lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^HostKey /etc/ssh/ssh_host_ed25519_key'
+    mode: 0600
+    state: absent
+  notify: Restart sshd
+  when: crypto_policy in ['FIPS', 'FIPS:OSPP']
+
+...

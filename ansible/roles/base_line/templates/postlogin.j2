@@ -1,0 +1,6 @@
+#%PAM-1.0
+{{ ansible_managed | comment }}
+{{ "Generated in role '%s'" | format(role_name) | comment }}
+session     optional                   pam_umask.so silent
+session     [success=1 default=ignore] pam_succeed_if.so service !~ gdm* service !~ su* quiet
+session     [default=1]                pam_lastlog.so nowtmp showfailed
