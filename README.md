@@ -69,6 +69,10 @@ To properly construct a virtual switch in Hyper-V for working with Packer, follo
 
 Click on OK to create the virtual switch.
 
+#### Network tuning
+- disable packet coalescing on the wifi card settings in device manager.
+- disable large send offload (for IPV4 and IPV6) from the 'Hyper-V Virtual Ethernet Adapter..' in device manager.
+
 `make virtualbox`
 `make hyperv`
 

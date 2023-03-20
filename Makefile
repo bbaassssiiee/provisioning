@@ -67,7 +67,7 @@ azure:-image
 	packer build --only azure-arm.alma8 ${DISTRO}.pkr.hcl
 
 .PHONY: hyperv
-hyperv: clean hyperv-box vagrant-up
+hyperv: hyperv-box vagrant-up
 	vagrant scp :/tmp/report.html .
 
 .PHONY: virtualbox

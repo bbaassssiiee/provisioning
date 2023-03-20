@@ -1,0 +1,23 @@
+---
+- name: Set httpd_can_network_connect
+  ansible.posix.seboolean:
+    name: httpd_can_network_connect
+    state: true
+    persistent: true
+
+- name: Configure TLS certificate
+  become: true
+  ansible.builtin.template:
+    src: certificate.pem.j2
+    dest: /etc/pki/tls/certs/cert.pem
+    mode: 0644
+  no_log: true
+
+
+- name: Configure TLS key
+  become: true
+  ansible.builtin.template:
+    src: certificate.key.j2
+    dest: /etc/pki/tls/private/cert.key
+    mode: 0600
+  no_log: true

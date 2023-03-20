@@ -1,0 +1,21 @@
+[Unit]
+Description=Squid Proxy Server
+After=network.target syslog.target
+
+[Service]
+Type=simple
+TimeoutStartSec=5m
+ExecStartPre=-/usr/bin/podman rm "squid-proxy"
+
+ExecStart=/usr/bin/podman run --name squid-proxy -p 3128:3128/tcp \
+        -v /home/squid/squid.conf:/etc/squid/squid.conf:ro \
+        ubuntu/squid
+
+ExecReload=-/usr/bin/podman stop "squid-proxy"
+ExecReload=-/usr/bin/podman rm   "squid-proxy"
+ExecStop=-/usr/bin/podman   stop "squid-proxy"
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

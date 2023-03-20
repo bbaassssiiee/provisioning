@@ -1,5 +1,6 @@
 [local]
-alma1 ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpreter=python3
+proxy ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpreter=python3
+artifactory ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpreter=python3
 
 [local:vars]
 ansible_ssh_user=vagrant
@@ -7,9 +8,14 @@ ansible_ssh_user=vagrant
 [local:children]
 artifactory_servers
 postgres_servers
+almalinux
+proxy
 
 [artifactory_servers]
-alma1 ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpreter=python3
+artifactory ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpreter=python3
 
 [postgres_servers]
-alma1 ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpreter=python3
+artifactory ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpreter=python3
+
+[almalinux]
+alma8 ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpreter=python3

@@ -1,0 +1,64 @@
+---
+- name: Ensure group exists
+  group:
+    name: "{{ proxy_group }}"
+    gid: 23
+    state: present
+    system: true
+
+- name: Ensure user exists
+  user:
+    name: "{{ proxy_user }}"
+    group: "{{ proxy_group }}"
+    uid: 23
+    create_home: true
+    home: /var/spool/squid
+    state: present
+    system: true
+
+- name: Ensure podman is installed
+  ansible.builtin.package:
+    name: podman
+    state: present
+
+- name: Get service facts
+  ansible.builtin.service_facts:
+
+- name: Determine firewalld_state
+  ansible.builtin.set_fact:
+    # yamllint disable-line rule:line-length
+    firewalld_status: "{{ ansible_facts.services['firewalld.service']['status'] }}"
+
+- name: Ensure firewall is running
+  when: firewalld_status == 'enabled'
+  ansible.builtin.systemd:
+    name: firewalld
+    state: started
+
+- name: Manage proxy port in firewalld
+  ansible.posix.firewalld:
+    port: '{{ proxy_port }}/tcp'
+    permanent: true
+    state: enabled
+    immediate: true
+
+- name: Install unit file
+  ansible.builtin.template:
+    src: squid.service.j2
+    dest: "/etc/systemd/system/squid.service"
+
+- name: Enable squid
+  ansible.builtin.systemd:
+    name: squid
+    daemon_reload: true
+    enabled: true
+  notify: Restart proxy
+
+- name: Deploy squid.conf
+  ansible.builtin.template:
+    src: squid.conf.j2
+    dest: "{{ proxy_home }}/squid.conf"
+    owner: "{{ proxy_user }}"
+    group: "{{ proxy_group }}"
+  notify: Restart proxy
+

@@ -1,0 +1,6 @@
+---
+proxy_user: squid
+proxy_group: squid
+proxy_port: 3128
+proxy_home: /home/{{ proxy_user }}
+proxy_data: "{{ proxy_home }}"
