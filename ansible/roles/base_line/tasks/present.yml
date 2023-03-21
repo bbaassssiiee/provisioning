@@ -32,14 +32,6 @@
     group: root
   loop: "{{ security_conf_files }}"
 
-- name: Set Default firewalld zone for incoming packets
-  ansible.builtin.lineinfile:
-    path: /etc/sudoers
-    regexp: '^Defaults logfile='
-    line: 'Defaults logfile=/var/log/sudo.log'
-    state: present
-    validate: /usr/sbin/visudo -cf %s
-
 - name: Get service facts
   ansible.builtin.service_facts:
 
