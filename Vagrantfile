@@ -24,6 +24,9 @@ Vagrant.configure(2) do |config|
     config.vbguest.auto_update = false
   end
 
+  # Vagrant cloud box
+  #config.vm.box = "almalinux/8"
+  # packer built box
   config.vm.box = "alma8/efi"
   config.vm.box_check_update = false
   config.ssh.insert_key = false

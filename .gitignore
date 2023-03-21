@@ -7,5 +7,6 @@
 .pytest_cache
 output-alma8/
 packer_cache/
-files/
 report.html
+/CHECKSUM
+/RPM-GPG-KEY-AlmaLinux

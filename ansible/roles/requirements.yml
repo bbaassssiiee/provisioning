@@ -8,3 +8,5 @@ collections:
 roles:
   - src: https://github.com/ansible-lockdown/RHEL8-CIS.git
     name: RHEL8-CIS
+  - src: https://github.com/ansible-lockdown/RHEL8-CIS-Audit.git
+    name: RHEL8-CIS-Audit

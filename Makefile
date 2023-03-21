@@ -30,22 +30,22 @@ packer:
 	packer init --upgrade ${DISTRO}.pkr.hcl
 
 # Create image for Hyper-V
-.PHONY: hyperv-image
-hyperv-image:
-	packer build -force --only hyperv-iso.alma8 ${DISTRO}.pkr.hcl
 output-${DISTRO}/${DISTRO}.x86_64.hyperv.box:
-	packer build -force --only hyperv-iso.alma8 ${DISTRO}.pkr.hcl
+	scripts/validate-iso.sh alma8.pkr.hcl 
+	packer build --only hyperv-iso.alma8 ${DISTRO}.pkr.hcl
+.PHONY: hyperv-image
+hyperv-image: output-${DISTRO}/${DISTRO}.x86_64.hyperv.box
 
 # Create image for VirtualBox
-.PHONY: virtualbox-image
-virtualbox-image:
-	packer build -force --only virtualbox-iso.alma8 ${DISTRO}.pkr.hcl
 output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box:
-	packer build -force --only virtualbox-iso.alma8 ${DISTRO}.pkr.hcl
+	scripts/validate-iso.sh alma8.pkr.hcl 
+	packer build --only virtualbox-iso.alma8 ${DISTRO}.pkr.hcl
+.PHONY: virtualbox-image
+virtualbox-image: output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box
 
 # Load hyperv image into Vagrant
 .PHONY: hyperv-box
-hyperv-box: output-${DISTRO}/${DISTRO}.x86_64.hyperv.box
+hyperv-box: output-alma8/alma8.x86_64.hyperv.box
 	vagrant box add --provider hyperv --name alma8/efi output-${DISTRO}/${DISTRO}.x86_64.hyperv.box
 
 # Load virtualbox image into Vagrant
@@ -57,9 +57,9 @@ virtualbox-box: output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box
 vagrant-up:
 	vagrant validate
 	vagrant box list
-	vagrant up --no-provision
-	vagrant provision
-	vagrant scp :/tmp/report.html .
+	vagrant up --no-provision alma8
+	vagrant provision alma8
+	vagrant scp alma8:/tmp/report.html .
 
 # Create image for Azure
 .PHONY: azure-image
