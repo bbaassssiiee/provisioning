@@ -1,6 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-# Vagrantfile for Hyper-V
+# Vagrantfile for VirtualBox
 Vagrant.configure(2) do |config|
 
   # Install required plugins
@@ -52,6 +52,38 @@ Vagrant.configure(2) do |config|
           time_synchronization: true,
         }
         hyperv.linked_clone = true
+      end
+      server.vm.provider "virtualbox" do |virtualbox|
+
+        virtualbox.name = hostname
+        virtualbox.linked_clone = true
+        virtualbox.gui = false
+        virtualbox.default_nic_type = "82540em"
+        # Boot order setting is ignored if EFI is enabled
+        # https://www.virtualbox.org/ticket/19364
+        virtualbox.customize ["modifyvm", :id,
+          "--audio", "none",
+          "--boot1", "disk",
+          "--boot2", "net",
+          "--boot3", "none",
+          "--boot4", "none",
+          "--cpus", params[:cpus],
+          "--firmware", "EFI",
+          "--macaddress2", params[:mac].gsub("-", ""),
+          "--memory", params[:mem],
+          "--usb", "on",
+          "--usbehci", "on",
+          "--vrde", "on",
+          "--graphicscontroller", "VMSVGA",
+          "--vram", "64"
+        ]
+        virtualbox.customize ["storageattach", :id,
+          "--device", "0",
+          "--medium", "emptydrive",
+          "--port", "1",
+          "--storagectl", "IDE Controller",
+          "--type", "dvddrive"
+        ]
       end
 
       server.vm.provision "file", source: "scripts/ansible.sh", destination: "/home/vagrant/ansible.sh"

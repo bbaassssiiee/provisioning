@@ -93,7 +93,7 @@ source "hyperv-iso" "alma8" {
   enable_mac_spoofing    = true
   secure_boot_template   = "MicrosoftUEFICertificateAuthority"
   generation             = 2
-  guest_additions_mode   = "attach"
+  guest_additions_mode   = "disable"
   headless               = true
   http_directory         = "kickstart"
   keep_registered        = false
@@ -128,7 +128,7 @@ source "virtualbox-iso" "alma8" {
   gfx_efi_resolution     = "1920x1080"
   gfx_vram_size          = "128"
   guest_os_type          = "RedHat_64"
-  guest_additions_mode   = "attach"
+  guest_additions_mode   = "disable"
   hard_drive_interface   = "sata"
   hard_drive_nonrotational = true
   headless               = true
