@@ -12,14 +12,9 @@ steps:
     version: 1.8.4
 - task: Packer@1
   displayName: 'Packer build'
-  env: |+
-    ARM_RESOURCE_GROUP: ${{packer_resource_group}}
-    ARM_STORAGE_ACCOUNT: ${{packer_storage_account}}
-    ARM_STORAGE_ACCOUNT: ${{packer_subscription}}
  
   inputs:
     connectedServiceType: azure
-    connectedServiceAzure: ${{connectedServiceAzure}}
     templatePath: alma8.pkr.hcl
     force: true
     options: --only azure-arm.alma8
