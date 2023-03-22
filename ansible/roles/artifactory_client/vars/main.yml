@@ -1,0 +1,14 @@
+---
+
+yum_repofiles_unneeded:
+  - almalinux-nfv.repo
+  - almalinux-plus.repo
+  - almalinux-rt.repo
+  - almalinux-sap.repo
+  - almalinux-saphana.repo
+
+yum_repofiles_needed:
+  - almalinux.repo
+  - almalinux-ha.repo
+  - almalinux-powertools.repo
+  - almalinux-resilientstorage.repo

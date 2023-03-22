@@ -80,4 +80,14 @@
   roles:
     - role: artifactory_config
 
+- name: Secure Yum
+  hosts: almalinux
+  become: true
+  gather_facts: true
+  tags:
+    - yum
+  roles:
+    - role: artifactory_client
+
+
 ...

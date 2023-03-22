@@ -29,15 +29,16 @@ Vagrant.configure(2) do |config|
   config.ssh.insert_key = false
 
   cluster = {
-    "artifactory" => { :autostart => false, :mac => "00-C0-DE-DE-C0-DE", :cpus => 4, :mem => 4096},
-    "proxy" => { :autostart => false, :mac => "00-15-5D-C0-FF-EE", :cpus => 4, :mem => 4096  },
+    "artifactory" => { :autostart => true, :mac => "00-C0-DE-DE-C0-DE", :cpus => 4, :mem => 4096},
+    "proxy" => { :autostart => true, :mac => "00-15-5D-C0-FF-EE", :cpus => 4, :mem => 4096  },
     "alma8" => { :autostart => true, :mac => "00-15-5D-DE-CA-FE", :cpus => 4, :mem => 4096, }
   }
   cluster.each_with_index do |(hostname, params), index|
     config.vm.define hostname, autostart: params[:autostart] do |server|
       server.vm.hostname = hostname
       #server.vm.network "private_network", type: "dhcp", bridge: "Default Switch"
-      server.vm.network "public_network", type: "dhcp", bridge: "Wi-Fi"
+      server.vm.network "private_network", ip: "192.168.56.3#{index}"
+      # server.vm.network "public_network", type: "dhcp", bridge: "Wi-Fi"
       server.vm.synced_folder "/Users/Shared", "/vagrant", id: "vagrant-root", disabled: true
       server.vm.provider "hyperv" do |hyperv|
         hyperv.cpus = params[:cpus]
@@ -86,28 +87,32 @@ Vagrant.configure(2) do |config|
         ]
       end
 
-      server.vm.provision "file", source: "scripts/ansible.sh", destination: "/home/vagrant/ansible.sh"
-      server.vm.provision "shell", upload_path: "/home/vagrant/vagrant-inline", inline: "/bin/sh /home/vagrant/ansible.sh"
-      server.vm.provision "file", source: "./ansible", destination: "/home/vagrant/ansible"
-      server.vm.provision :ansible_local do |ansible|
-        ansible.compatibility_mode = "2.0"
-        ansible.extra_vars = { ansible_python_interpreter: "/usr/bin/python3" }
-        # Download dependencies
-        ansible.galaxy_role_file = "roles/requirements.yml"
-        ansible.galaxy_roles_path = "roles"
-        ansible.galaxy_command = "ansible-galaxy collection install -r %{role_file} --force && ansible-galaxy role install -p %{roles_path} -r %{role_file} --force"
-        ansible.inventory_path = "inventory"
-        ansible.playbook = "/home/vagrant/ansible/vagrant-playbook.yml"
-        ansible.provisioning_path = "/home/vagrant/ansible"
-        ansible.inventory_path = "/home/vagrant/ansible/inventory/local"
-        ansible.groups = {
-          "almalinux" => ["alma8"],
-          "artifactory_servers" => ["artifactory"],
-          "postgres_servers" => ["artifactory"],
-          "proxy" => ["proxy"]
-        }
-        ansible.galaxy_roles_path = "/home/vagrant/ansible/roles"
-        ansible.verbose = "vv"
+      # Only execute once the Ansible provisioner,
+      # when all the servers are up and ready
+      if index == 3
+        server.vm.provision "file", source: "scripts/ansible.sh", destination: "/home/vagrant/ansible.sh"
+        server.vm.provision "shell", upload_path: "/home/vagrant/vagrant-inline", inline: "/bin/sh /home/vagrant/ansible.sh"
+        server.vm.provision "file", source: "./ansible", destination: "/home/vagrant/ansible"
+        server.vm.provision :ansible_local do |ansible|
+          ansible.compatibility_mode = "2.0"
+          ansible.extra_vars = { ansible_python_interpreter: "/usr/bin/python3" }
+          # Download dependencies
+          ansible.galaxy_role_file = "roles/requirements.yml"
+          ansible.galaxy_roles_path = "roles"
+          ansible.galaxy_command = "ansible-galaxy collection install -r %{role_file} --force && ansible-galaxy role install -p %{roles_path} -r %{role_file} --force"
+          ansible.inventory_path = "inventory"
+          ansible.playbook = "/home/vagrant/ansible/vagrant-playbook.yml"
+          ansible.provisioning_path = "/home/vagrant/ansible"
+          ansible.inventory_path = "/home/vagrant/ansible/inventory/local"
+          ansible.groups = {
+            "almalinux" => ["alma8"],
+            "artifactory_servers" => ["artifactory"],
+            "postgres_servers" => ["artifactory"],
+            "proxy" => ["proxy"]
+          }
+          ansible.galaxy_roles_path = "/home/vagrant/ansible/roles"
+          ansible.verbose = "vv"
+        end
       end
     end
   end

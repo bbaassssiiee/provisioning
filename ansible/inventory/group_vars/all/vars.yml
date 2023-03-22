@@ -8,7 +8,8 @@ artifactory_enabled: true
 postgres_enabled: true
 # Set this to false when ngnix is disabled, defaults to true (implies artifactory uses artifactory_nginx role )
 artifactory_nginx_enabled: false
-# Set this to true when SSL is enabled (to use artifactory_nginx_ssl role), default to false (implies artifactory uses artifactory_nginx role )
+# Set this to true when SSL is enabled (to use artifactory_nginx_ssl role),
+# defaults to false (implies artifactory uses artifactory_nginx role )
 artifactory_nginx_ssl_enabled: true
 artifactory_conf_template: templates/custom/artifactory.conf.j2
 nginx_conf_template: templates/custom/nginx.conf.j2
@@ -71,8 +72,7 @@ certificate_key: |
 artifactory_db_type: postgresql
 artifactory_db_driver: org.postgresql.Driver
 artifactory_db_name: artifactory
-artifactory_db_user: artifactory_db_user
-artifactory_db_password: artifactory_db_password
+
 artifactory_db_url: "jdbc:postgresql://{{ groups.postgres_servers[0] }}:5432/{{ artifactory_db_name }}"
 
 # Postgresql users and databases/schemas
