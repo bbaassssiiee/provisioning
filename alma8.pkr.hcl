@@ -22,25 +22,43 @@ variable "iso_checksum" {
   default = "sha256:b95ddf9d56a849cc8eb4b95dd2321c13af637d3379b91f5d96c39e96fb4403b3"
 }
 
-variable "arm_subscription_id" {
+variable "client_id" {
+  type        = string
+  default     = "${env("ARM_CLIENT_ID")}"
+  description = "https://www.packer.io/docs/builders/azure/arm"
+}
+
+variable "client_secret" {
+  type        = string
+  default     = "${env("ARM_CLIENT_SECRET")}"
+  description = "https://www.packer.io/docs/builders/azure/arm"
+}
+
+variable "subscription_id" {
   type        = string
   default     = "${env("ARM_SUBSCRIPTION_ID")}"
   description = "https://www.packer.io/docs/builders/azure/arm"
 }
 
-variable "arm_location" {
+variable "tenant_id" {
+  type        = string
+  default     = "${env("ARM_TENANT_ID")}"
+  description = "https://www.packer.io/docs/builders/azure/arm"
+}
+
+variable "location" {
   type        = string
   default     = "westeurope"
   description = "https://azure.microsoft.com/en-us/global-infrastructure/geographies/"
 }
 
-variable "arm_resource_group" {
+variable "managed_image_resource_group_name" {
   type        = string
-  default     = "${env("ARM_RESOURCE_GROUP")}"
+  default     = "VMImageResourceGroup"
   description = "make arm-resourcegroup in Makefile"
 }
 
-variable "arm_storage_account" {
+variable "storage_account" {
   type        = string
   default     = "${env("ARM_STORAGE_ACCOUNT")}"
   description = "make arm-storageaccount in Makefile"
@@ -64,13 +82,13 @@ source "azure-arm" "alma8" {
   image_offer                       = "almalinux"
   image_publisher                   = "almalinux"
   image_sku                         = "8-gen2"
-  location                          = "${var.arm_location}"
+  location                          = "${var.location}"
   managed_image_name                = "${var.image}"
-  managed_image_resource_group_name = "${var.arm_resource_group}"
+  managed_image_resource_group_name = "${var.managed_image_resource_group_name}"
   os_disk_size_gb                   = "30"
   os_type                           = "Linux"
-  subscription_id                   = "${var.arm_subscription_id}"
-  use_azure_cli_auth                = true
+  subscription_id                   = "${var.subscription_id}"
+  use_azure_cli_auth                = false
   vm_size                           = "Standard_DS2_v2"
 }
 
