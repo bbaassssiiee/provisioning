@@ -1,0 +1,28 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+resources:
+  - repo: self
+steps:
+- task: riezebosch.Packer.PackerTool.PackerTool@0
+  displayName: 'Use Packer 1.8.4'
+  inputs:
+    version: 1.8.4
+- task: Packer@1
+  displayName: 'Packer build'
+  env: |+
+    ARM_RESOURCE_GROUP=$(packer_resource_group)
+    ARM_STORAGE_ACCOUNT=$(packer_storage_account)
+    ARM_STORAGE_ACCOUNT=$(packer_subscription)
+ 
+  inputs:
+    connectedServiceType: azure
+    connectedServiceAzure: $(connectedServiceAzure)
+    templatePath: alma8.pkr.hcl
+    force: true
+    options: --only azure-arm.alma8
