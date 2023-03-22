@@ -61,9 +61,19 @@ vagrant-up:
 	vagrant provision alma8
 	vagrant scp alma8:/tmp/report.html .
 
+# Create resource group once for Azure
+.PHONY: resource-group
+resource-group:
+	az group create -l westeurope -n "${ARM_RESOURCE_GROUP}"
+
+# Create storage account once for Azure
+.PHONY: storage-account
+storage-account:
+	az storage account create -l westeurope -g "${ARM_RESOURCE_GROUP}" -n "${ARM_STORAGE_ACCOUNT}" --sku Premium_LRS --https-only true
+
 # Create image for Azure
 .PHONY: azure-image
-azure:-image
+azure-image:
 	packer build --only azure-arm.alma8 ${DISTRO}.pkr.hcl
 
 .PHONY: hyperv
