@@ -13,9 +13,9 @@ steps:
 - task: Packer@1
   displayName: 'Packer build'
   env: |+
-    ARM_RESOURCE_GROUP=$(packer_resource_group)
-    ARM_STORAGE_ACCOUNT=$(packer_storage_account)
-    ARM_STORAGE_ACCOUNT=$(packer_subscription)
+    ARM_RESOURCE_GROUP: $(packer_resource_group)
+    ARM_STORAGE_ACCOUNT: $(packer_storage_account)
+    ARM_STORAGE_ACCOUNT: $(packer_subscription)
  
   inputs:
     connectedServiceType: azure
