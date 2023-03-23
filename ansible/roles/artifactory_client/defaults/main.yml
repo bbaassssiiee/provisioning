@@ -1,0 +1,3 @@
+---
+artifactory_rpm_repo: 'almalinux-remote'
+sslverify: 'True'

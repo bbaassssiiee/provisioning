@@ -19,8 +19,6 @@ These programs should be installed.
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
 ```
 
-
-
 ### VirtualBox
 
 Alternatively you can install VirtualBox and its extension pack from [virtualbox.org](https://www.virtualbox.org/wiki/Downloads)
@@ -57,6 +55,16 @@ Install Packer from a [download from HashiCorp](https://developer.hashicorp.com/
 ```PowerShell
 	choco install packer --version=1.8.4 -y
 	packer init --upgrade alma8.pkr.hcl
+```
+
+#### Creating an Azure VM base image
+
+The Packer template `alma8.pkr.hcl` expects a couple of environment variables:
+
+```PowerShell
+$env:ARM_SUBSCRIPTION_ID = "" 
+$env:ARM_RESOURCE_GROUP = "" 
+$env:ARM_STORAGE_ACCOUNT = ""
 ```
 
 #### Network switch in bridge mode
