@@ -9,9 +9,3 @@ steps:
 - task: PackerTool@0
   inputs:
     version: '1.8.4'
-- task: Packer@1
-  inputs:
-    connectedServiceType: 'azure'
-    azureSubscription: 'Pay-As-You-Go(e754b34e-e957-489b-9698-0b07172e0f89)'
-    templatePath: 'alma8.pkr.hcl'
-    command: 'validate'
