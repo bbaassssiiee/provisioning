@@ -59,13 +59,24 @@ Install Packer from a [download from HashiCorp](https://developer.hashicorp.com/
 
 #### Creating an Azure VM base image
 
-The Packer template `alma8.pkr.hcl` expects a couple of environment variables:
+[Azure howto](https://learn.microsoft.com/en-us/azure/virtual-machines/linux/build-image-with-packer)
+
+The Packer template `alma8.pkr.hcl` expects a couple of environment variables, when run from cli:
 
 ```PowerShell
-$env:ARM_SUBSCRIPTION_ID = "" 
-$env:ARM_RESOURCE_GROUP = "" 
-$env:ARM_STORAGE_ACCOUNT = ""
+$env:ARM_LOCATION = "westeurope"
+$env:ARM_SUBSCRIPTION_ID = "westeurope"
+$env:ARM_RESOURCE_GROUP = "VMImageResourceGroup"
+$env:ARM_STORAGE_ACCOUNT = "A_Global_unique_name"
 ```
+
+
+Azure DevOps needs a service principal, the values in the output can be setup in the pipeline variables as secrets.
+
+```sh
+az ad sp create-for-rbac --role Contributor --scopes /subscriptions/<subscription_id> --query "{ client_id: appId, client_secret: password, tenant_id: tenant }"
+```
+
 
 #### Network switch in bridge mode
 
