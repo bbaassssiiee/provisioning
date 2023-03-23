@@ -52,7 +52,7 @@ variable "location" {
   description = "https://azure.microsoft.com/en-us/global-infrastructure/geographies/"
 }
 
-variable "resource_group" {
+variable "managed_image_resource_group_name" {
   type        = string
   default     = "${env("ARM_RESOURCE_GROUP")}"
   description = "make arm-resourcegroup in Makefile"
@@ -84,7 +84,7 @@ source "azure-arm" "alma8" {
   image_sku                         = "8-gen2"
   location                          = "${var.location}"
   managed_image_name                = "${var.image}"
-  managed_image_resource_group_name = "${var.resource_group}"
+  managed_image_resource_group_name = "${var.managed_image_resource_group_name}"
   os_disk_size_gb                   = "30"
   os_type                           = "Linux"
   subscription_id                   = "${var.subscription_id}"
