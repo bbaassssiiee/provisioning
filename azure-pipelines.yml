@@ -17,3 +17,10 @@ steps:
     azureSubscription: 'AzureDevOps'
     templatePath: 'alma8.pkr.hcl'
     command: 'validate'
+- task: Packer@1
+  inputs:
+    connectedServiceType: 'azure'
+    azureSubscription: 'AzureDevOps'
+    templatePath: 'alma8.pkr.hcl'
+    command: 'build'
+    options: '--only azure-arm.alma8'
