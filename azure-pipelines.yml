@@ -6,15 +6,12 @@
 resources:
   - repo: self
 steps:
-- task: riezebosch.Packer.PackerTool.PackerTool@0
-  displayName: 'Use Packer 1.8.4'
+- task: PackerTool@0
   inputs:
-    version: 1.8.4
+    version: '1.8.4'
 - task: Packer@1
-  displayName: 'Packer build'
- 
   inputs:
-    connectedServiceType: azure
-    templatePath: alma8.pkr.hcl
-    force: true
-    options: --only azure-arm.alma8
+    connectedServiceType: 'azure'
+    azureSubscription: 'Pay-As-You-Go(e754b34e-e957-489b-9698-0b07172e0f89)'
+    templatePath: 'alma8.pkr.hcl'
+    command: 'validate'
