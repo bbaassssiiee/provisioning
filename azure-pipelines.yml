@@ -25,3 +25,4 @@ steps:
     command: 'build'
     force: true
     options: '--only azure-arm.alma8'
+    
