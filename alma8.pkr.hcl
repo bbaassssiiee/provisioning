@@ -88,7 +88,7 @@ source "azure-arm" "alma8" {
   os_disk_size_gb                   = "30"
   os_type                           = "Linux"
   subscription_id                   = "${var.subscription_id}"
-  use_azure_cli_auth                = true
+  use_azure_cli_auth                = false
   vm_size                           = "Standard_DS2_v2"
 }
 
