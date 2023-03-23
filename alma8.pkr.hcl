@@ -54,7 +54,7 @@ variable "location" {
 
 variable "managed_image_resource_group_name" {
   type        = string
-  default     = "${env("ARM_RESOURCE_GROUP")}"
+  default     = "VMImageResourceGroup"
   description = "make arm-resourcegroup in Makefile"
 }
 

@@ -8,7 +8,7 @@ fi
 # Use environment variables or define defaults
 if [ -z "${ARM_RESOURCE_GROUP}" ]
 then
-  export ARM_RESOURCE_GROUP=${USER}resourcegroup
+  export ARM_RESOURCE_GROUP=VMImageResourceGroup
 fi
 
 if [ -z "${ARM_LOCATION}" ]
