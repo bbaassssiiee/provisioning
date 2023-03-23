@@ -9,3 +9,13 @@ steps:
 - task: PackerTool@0
   inputs:
     version: '1.8.4'
+- task: Packer@1
+  inputs:
+    connectedServiceType: 'azure'
+    azureSubscription: 'AzureDevOps'
+    templatePath: 'alma8.pkr.hcl'
+    command: 'validate'
+  env:
+    ARM_SUBSCRIPTION_ID: $(subscriptionId)
+    ARM_RESOURCE_GROUP: $(resourceGroup)
+    ARM_STORAGE_ACCOUNT: $(storageAccount)
