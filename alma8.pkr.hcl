@@ -87,6 +87,9 @@ source "azure-arm" "alma8" {
   managed_image_resource_group_name = "${var.managed_image_resource_group_name}"
   os_disk_size_gb                   = "30"
   os_type                           = "Linux"
+  client_id                         = "${var.client_id}"
+  client_secret                     = "${var.client_secret}"
+  tenant_id                         = "${var.tenant_id}"
   subscription_id                   = "${var.subscription_id}"
   use_azure_cli_auth                = false
   vm_size                           = "Standard_DS2_v2"
