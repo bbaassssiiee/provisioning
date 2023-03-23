@@ -14,7 +14,7 @@ steps:
     connectedServiceType: 'azure'
     azureSubscription: 'AzureDevOps'
     templatePath: 'alma8.pkr.hcl'
-    command: 'validate'
+    command: 'init'
   env:
     ARM_SUBSCRIPTION_ID: $(subscription_id)
     ARM_RESOURCE_GROUP: $(resource_group)
