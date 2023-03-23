@@ -1,7 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
 
 resources:
   - repo: self
@@ -15,7 +11,4 @@ steps:
     azureSubscription: 'AzureDevOps'
     templatePath: 'alma8.pkr.hcl'
     command: 'init'
-  env:
-    ARM_SUBSCRIPTION_ID: $(subscription_id)
-    ARM_RESOURCE_GROUP: $(resource_group)
-    ARM_STORAGE_ACCOUNT: $(storage_account)
+
