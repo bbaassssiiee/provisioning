@@ -59,7 +59,6 @@ vagrant-up:
 	vagrant box list
 	vagrant up --no-provision proxy
 	vagrant provision proxy
-	vagrant scp proxy:/tmp/report.html .
 
 # Create resource group once for Azure
 .PHONY: resource-group
