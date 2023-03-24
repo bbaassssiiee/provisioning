@@ -7,17 +7,19 @@
   gather_facts: true
 
   vars:
-    crypto_policy: FIPS
+    crypto_policy: DEFAULT
   roles:
     - role: yum_config
       repo_url: 'https://mirrors.xtom.nl/almalinux'
       # repo url is a mirror or internal repo/proxy for the RPM
       # xtom.nl is the only mirror usable with crypto_policy: FUTURE
-    - openssh
     - role: rhel8cis
+      rhel8cis_rule_5_2_15: false
       rhel8cis_rule_5_3_4: false
+      rhel8cis_ssh_loglevel: VERBOSE
       rhel8cis_remote_log_server: loghost
       rhel8cis_crypto_policy: "{{ crypto_policy }}"
+    - openssh
     - base_line
 
 ...
