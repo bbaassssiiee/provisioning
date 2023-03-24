@@ -10,3 +10,6 @@ packer_cache/
 report.html
 /CHECKSUM
 /RPM-GPG-KEY-AlmaLinux
+ansible/roles/rhel8cis
+ansible/roles/base_line/
+ansible/roles/openssh/

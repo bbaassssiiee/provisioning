@@ -1,8 +1,0 @@
----
-
-- name: Artifactory Bootstrap YAML File
-  ansible.builtin.template:
-    src: artifactory.config.import.yml.j2
-    dest: /opt/jfrog/artifactory/var/etc/artifactory/artifactory.config.import.yml
-    mode: 0644
-  notify: Restart Artifactory

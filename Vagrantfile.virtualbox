@@ -29,9 +29,9 @@ Vagrant.configure(2) do |config|
   config.ssh.insert_key = false
 
   cluster = {
-    "artifactory" => { :autostart => true, :mac => "00-C0-DE-DE-C0-DE", :cpus => 4, :mem => 4096},
+    "web" => { :autostart => false, :mac => "00-C0-DE-DE-C0-DE", :cpus => 4, :mem => 4096},
     "proxy" => { :autostart => true, :mac => "00-15-5D-C0-FF-EE", :cpus => 4, :mem => 4096  },
-    "alma8" => { :autostart => true, :mac => "00-15-5D-DE-CA-FE", :cpus => 4, :mem => 4096, }
+    "db" => { :autostart => false, :mac => "00-15-5D-DE-CA-FE", :cpus => 4, :mem => 4096, }
   }
   cluster.each_with_index do |(hostname, params), index|
     config.vm.define hostname, autostart: params[:autostart] do |server|
@@ -87,32 +87,21 @@ Vagrant.configure(2) do |config|
         ]
       end
 
-      # Only execute once the Ansible provisioner,
-      # when all the servers are up and ready
-      if index == 3
-        server.vm.provision "file", source: "scripts/ansible.sh", destination: "/home/vagrant/ansible.sh"
-        server.vm.provision "shell", upload_path: "/home/vagrant/vagrant-inline", inline: "/bin/sh /home/vagrant/ansible.sh"
-        server.vm.provision "file", source: "./ansible", destination: "/home/vagrant/ansible"
-        server.vm.provision :ansible_local do |ansible|
-          ansible.compatibility_mode = "2.0"
-          ansible.extra_vars = { ansible_python_interpreter: "/usr/bin/python3" }
-          # Download dependencies
-          ansible.galaxy_role_file = "roles/requirements.yml"
-          ansible.galaxy_roles_path = "roles"
-          ansible.galaxy_command = "ansible-galaxy collection install -r %{role_file} --force && ansible-galaxy role install -p %{roles_path} -r %{role_file} --force"
-          ansible.inventory_path = "inventory"
-          ansible.playbook = "/home/vagrant/ansible/vagrant-playbook.yml"
-          ansible.provisioning_path = "/home/vagrant/ansible"
-          ansible.inventory_path = "/home/vagrant/ansible/inventory/local"
-          ansible.groups = {
-            "almalinux" => ["alma8"],
-            "artifactory_servers" => ["artifactory"],
-            "postgres_servers" => ["artifactory"],
-            "proxy" => ["proxy"]
-          }
-          ansible.galaxy_roles_path = "/home/vagrant/ansible/roles"
-          ansible.verbose = "vv"
-        end
+      server.vm.provision :ansible do |ansible|
+        ansible.compatibility_mode = "2.0"
+        ansible.extra_vars = { ansible_python_interpreter: "/usr/bin/python3" }
+        # Download dependencies
+        ansible.galaxy_role_file = "ansible/roles/requirements.yml"
+        ansible.galaxy_roles_path = "ansible/roles"
+        ansible.inventory_path = "ansible/inventory/hosts"
+        ansible.playbook = "ansible/vagrant-playbook.yml"
+        ansible.groups = {
+          "web_servers" => ["web"],
+          "postgres_servers" => ["db"],
+          "proxy" => ["proxy"]
+        }
+        ansible.galaxy_roles_path = "ansible/roles"
+        ansible.verbose = "v"
       end
     end
   end
