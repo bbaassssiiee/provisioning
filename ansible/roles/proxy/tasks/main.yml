@@ -6,6 +6,22 @@
     state: present
     system: true
 
+- name: Ensure groups exists
+  ansible.builtin.group:
+    name: "{{ item.group }}"
+    gid: "{{ item.gid }}"
+    state: present
+    system: true
+  loop:
+    - group: shadow
+      gid: 42
+    - group: utmp
+      gid: 43
+    - group: crontab
+      gid: 101
+    - group: ssl-cert
+      gid: 102
+
 - name: Ensure user exists
   ansible.builtin.user:
     name: "{{ proxy_user }}"
@@ -13,6 +29,7 @@
     uid: 13
     create_home: true
     home: "{{ proxy_home }}"
+    shell: /usr/sbin/nologin
     state: present
     system: true
 
