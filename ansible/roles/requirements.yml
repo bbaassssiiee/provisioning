@@ -1,11 +1,11 @@
 ---
-collections:
-  - name: jfrog.platform
-    source: https://galaxy.ansible.com/download/jfrog-platform-10.12.0.tar.gz
-    type: url
 
 roles:
   # https://github.com/ansible-lockdown/RHEL8-CIS/archive/refs/tags/2.2.1.tar.gz
   - src: https://github.com/ansible-lockdown/RHEL8-CIS.git
     version: 2.2.1
     name: rhel8cis
+  - src: https://github.com/ansiblebook/ansible_role_ssh.git
+    name: openssh
+  - src: https://github.com/dockpack/base_line.git
+    name: base_line

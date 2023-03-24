@@ -4,19 +4,15 @@
 ansible_ssh_user=vagrant
 
 [local:children]
-artifactory_servers
+web_servers
 postgres_servers
-almalinux
 proxy_servers
 
 [proxy_servers]
 proxy ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpreter=python3
 
-[artifactory_servers]
-artifactory ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpreter=python3
+[web_servers]
+web ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpreter=python3
 
 [postgres_servers]
-artifactory ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpreter=python3
-
-[almalinux]
-alma8 ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpreter=python3
+db ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpreter=python3

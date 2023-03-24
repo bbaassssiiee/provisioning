@@ -10,7 +10,7 @@
     - role: proxy
 
 - name: Security Audit
-  hosts: almalinux
+  hosts: all
   become: true
   gather_facts: true
 
@@ -40,54 +40,4 @@
         path: /tmp/report.html
         owner: "{{ ansible_ssh_user }}"
         mode: '0600'
-
-- name: Deploy Postgres
-  hosts: postgres_servers
-  collections:
-    - community.postgresql
-    - community.general
-    - jfrog.platform
-  tags:
-    - postgres
-  roles:
-    - role: postgres
-      when: postgres_enabled | bool
-
-- name: Deploy Artifactory
-  hosts: artifactory_servers
-  become: true
-  gather_facts: true
-  collections:
-    - community.general
-    - jfrog.platform
-  tags:
-    - deploy
-  serial:
-    - 1
-    - 100%
-  roles:
-    - role: firewall
-    - role: tls_config
-    - role: artifactory
-      when: artifactory_enabled | bool
-
-- name: Configure Artifactory
-  hosts: artifactory_servers
-  become: true
-  gather_facts: true
-  tags:
-    - configure
-  roles:
-    - role: artifactory_config
-
-- name: Secure Yum
-  hosts: almalinux
-  become: true
-  gather_facts: true
-  tags:
-    - yum
-  roles:
-    - role: yum_config
-
-
 ...

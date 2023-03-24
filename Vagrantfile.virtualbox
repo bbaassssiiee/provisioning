@@ -29,9 +29,9 @@ Vagrant.configure(2) do |config|
   config.ssh.insert_key = false
 
   cluster = {
-    "artifactory" => { :autostart => true, :mac => "00-C0-DE-DE-C0-DE", :cpus => 4, :mem => 4096},
+    "web" => { :autostart => true, :mac => "00-C0-DE-DE-C0-DE", :cpus => 4, :mem => 4096},
     "proxy" => { :autostart => true, :mac => "00-15-5D-C0-FF-EE", :cpus => 4, :mem => 4096  },
-    "alma8" => { :autostart => true, :mac => "00-15-5D-DE-CA-FE", :cpus => 4, :mem => 4096, }
+    "db" => { :autostart => true, :mac => "00-15-5D-DE-CA-FE", :cpus => 4, :mem => 4096, }
   }
   cluster.each_with_index do |(hostname, params), index|
     config.vm.define hostname, autostart: params[:autostart] do |server|
