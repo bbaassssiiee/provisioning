@@ -1,14 +1,5 @@
 ---
 collections:
-  - name: ansible.posix
-    source: https://galaxy.ansible.com/download/ansible-posix-1.5.1.tar.gz
-    type: url
-  - name: community.general
-    source: https://galaxy.ansible.com/download/community-general-6.4.0.tar.gz
-    type: url
-  - name: community.postgresql
-    source: https://galaxy.ansible.com/download/community-postgresql-2.3.2.tar.gz
-    type: url
   - name: jfrog.platform
     source: https://galaxy.ansible.com/download/jfrog-platform-10.12.0.tar.gz
     type: url
