@@ -1,4 +1,2 @@
 ---
 # encrypt this with ansible-vault
-master_key: 51a12c5228b5e72e886601fc7cbfc4471cc504ad13744170c70cf8e7ad7ab7f6
-join_key: f1b548e3ec516b888348ca7765488eb04ef31f0c91e3b9c6b17dc9a79720ff50

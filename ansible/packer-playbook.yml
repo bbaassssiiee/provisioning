@@ -7,7 +7,7 @@
   gather_facts: true
 
   vars:
-      crypto_policy: FIPS
+    crypto_policy: FIPS
   roles:
     - role: yum_config
       repo_url: 'https://mirrors.xtom.nl/almalinux'
