@@ -87,7 +87,7 @@
   tags:
     - yum
   roles:
-    - role: artifactory_client
+    - role: yum_config
 
 
 ...

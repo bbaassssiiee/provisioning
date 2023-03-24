@@ -2,7 +2,7 @@
 
 [ha]
 name=AlmaLinux $releasever - HighAvailability
-baseurl=https://{{ groups.artifactory_servers[0] }}/artifactory/{{ artifactory_rpm_repo }}/$releasever/HighAvailability/$basearch/os/
+baseurl={{ repo_url }}/$releasever/HighAvailability/$basearch/os/
 enabled=0
 gpgcheck=1
 countme=1

@@ -2,7 +2,7 @@
 
 [resilientstorage]
 name=AlmaLinux $releasever - ResilientStorage
-baseurl=https://{{ groups.artifactory_servers[0] }}/artifactory/{{ artifactory_rpm_repo }}/$releasever/ResilientStorage/$basearch/os/
+baseurl={{ repo_url }}/$releasever/ResilientStorage/$basearch/os/
 enabled=0
 gpgcheck=1
 countme=1
