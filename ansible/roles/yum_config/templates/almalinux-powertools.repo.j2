@@ -2,7 +2,7 @@
 
 [powertools]
 name=AlmaLinux $releasever - PowerTools
-baseurl=https://{{ groups.artifactory_servers[0] }}/artifactory/{{ artifactory_rpm_repo }}/$releasever/PowerTools/$basearch/os/
+baseurl={{ repo_url }}/$releasever/PowerTools/$basearch/os/
 enabled=1
 gpgcheck=1
 countme=1

@@ -2,7 +2,7 @@
 
 [baseos]
 name=AlmaLinux $releasever - BaseOS
-baseurl=https://{{ groups.artifactory_servers[0] }}/artifactory/{{ artifactory_rpm_repo }}/$releasever/BaseOS/$basearch/os/
+baseurl={{ repo_url }}/$releasever/BaseOS/$basearch/os/
 enabled=1
 gpgcheck=1
 countme=1
@@ -10,7 +10,7 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux
 
 [appstream]
 name=AlmaLinux $releasever - AppStream
-baseurl=https://{{ groups.artifactory_servers[0] }}/artifactory/{{ artifactory_rpm_repo }}/$releasever/AppStream/$basearch/os/
+baseurl={{ repo_url }}/$releasever/AppStream/$basearch/os/
 enabled=1
 gpgcheck=1
 countme=1
@@ -18,7 +18,7 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux
 
 [extras]
 name=AlmaLinux $releasever - Extras
-baseurl=https://{{ groups.artifactory_servers[0] }}/artifactory/{{ artifactory_rpm_repo }}/$releasever/extras/$basearch/os/
+baseurl={{ repo_url }}/$releasever/extras/$basearch/os/
 enabled=1
 gpgcheck=1
 countme=1

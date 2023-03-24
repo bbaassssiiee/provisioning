@@ -6,14 +6,15 @@
   become: true
   gather_facts: true
 
-  vars:
-    rhel8cis_rule_5_3_4: false
-    rhel8cis_remote_log_server: loghost
-    crypto_policy: DEFAULT
-
   roles:
-    - RHEL8-CIS
-    - openssh
+    - role: yum_config
+      repo_url: 'https://almalinux.mirror.liteserver.nl/'
+      # repo url is a mirror or internal repo/proxy for the RPMs
+    - role: rhel8cis
+      rhel8cis_rule_5_3_4: false
+      rhel8cis_remote_log_server: loghost
+    - role: openssh
+      crypto_policy: FUTURE
     - base_line
 
 ...
