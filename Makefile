@@ -71,6 +71,11 @@ storage-account:
 	az storage account create -l westeurope -g "${ARM_RESOURCE_GROUP}" -n "${ARM_STORAGE_ACCOUNT}" --sku Premium_LRS --https-only true
 
 # Create image for Azure
+.PHONY: azure-vm
+azure-vm:
+	az vm create --name alma8 --location westeurope --image /subscriptions/e754b34e-e957-489b-9698-0b07172e0f89/resourceGroups/VMImageResourceGroup/providers/Microsoft.Compute/images/almalinux8 --admin-username "${USER}" --plan-name 8-gen2 --plan-product almalinux --plan-publisher almalinux -g "${ARM_RESOURCE_GROUP}" --ssh-key-values "${HOME}/.ssh/id_rsa.pub" --size Standard_B2ms --nsg alma-nsg --public-ip-sku Standard
+
+# Create image for Azure
 .PHONY: azure-image
 azure-image:
 	packer build --only azure-arm.alma8 ${DISTRO}.pkr.hcl
