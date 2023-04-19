@@ -1,6 +1,7 @@
 ---
 
 - name: Determine IP address
+  when: kickstart_server is not defined
   ansible.builtin.set_fact:
     # yamllint disable-line rule:line-length
     kickstart_server: "{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}"

@@ -1,0 +1,11 @@
+---
+- name: Reload firewalld
+  ansible.builtin.command: firewall-cmd --reload
+  become: true
+
+- name: Start DHCPd
+  when: start_on_boot
+  ansible.builtin.systemd:
+    name: dhcpd
+    state: started
+  become: true

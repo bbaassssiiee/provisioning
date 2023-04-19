@@ -1,0 +1,9 @@
+---
+#
+# Default variables
+domain_name: ".local"
+config_destination: /etc/dhcp
+boot_filename: "shimx64.efi"
+start_on_boot: true
+enable_permanent_firewall: true
+desired_state: present
