@@ -88,7 +88,6 @@
 
 - name: Enable firewall for TFTP
   ansible.posix.firewalld:
-    zone: internal
     service: tftp
     permanent: true
     immediate: true

@@ -1,0 +1,23 @@
+---
+
+#
+# Galaxy
+
+galaxy_info:
+  role_name: kickstart
+  namespace: bbaassssiiee
+  author: Bas Meijer
+  description: Creates a kickstart installation for AlmaLinux8
+
+  license: MIT
+
+  min_ansible_version: 2.10.0
+  platforms:
+    - name: EL
+      versions:
+        - 8
+  galaxy_tags:
+    - system
+    - kickstart
+
+dependencies: []

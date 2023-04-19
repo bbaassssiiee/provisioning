@@ -1,0 +1,128 @@
+---
+
+- name: Determine IP address
+  ansible.builtin.set_fact:
+    # yamllint disable-line rule:line-length
+    kickstart_server: "{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}"
+
+- name: See if mount directory exists
+  ansible.builtin.stat:
+    path: "{{ web_mount_dir }}"
+  register: mount_dir
+
+- name: Create mount directory
+  when: not mount_dir.stat.exists
+  become: true
+  ansible.builtin.file:
+    path: "{{ web_mount_dir }}"
+    state: directory
+    mode: 0755
+
+- name: Mount installation ISO
+  become: true
+  ansible.builtin.mount:
+    path: "{{ web_mount_dir }}"
+    src: "{{ installation_iso_image }}"
+    opts: ro,loop
+    fstype: iso9660
+    state: mounted
+  tags:
+    - notest
+
+- name: Create kickstart directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ ks_dir }}"
+    state: directory
+    owner: root
+    group: apache
+    mode: 0755
+
+- name: Install kickstart file
+  become: true
+  ansible.builtin.template:
+    src: ../kickstart/ks.cfg
+    dest: "{{ ks_dir }}/ks.cfg"
+    owner: root
+    group: apache
+    mode: 0640
+
+- name: Install yum repo file
+  become: true
+  ansible.builtin.template:
+    src: alma8.repo.j2
+    dest: "{{ ks_dir }}/almalinux.repo"
+    owner: root
+    group: apache
+    mode: 0640
+
+- name: Download boot packages
+  become: true
+  ansible.builtin.get_url:
+    url: "{{ item }}"
+    dest: "{{ download_folder }}/"
+  loop:
+    - "{{ kickstart_grub_url }}"
+    - "{{ kickstart_shim_url }}"
+
+- name: Extract the boot packages
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail;
+    rpm2cpio {{ item }} | cpio -dimv
+  args:
+    chdir: "{{ download_folder }}"
+    creates: "{{ download_folder }}/boot/efi/EFI/almalinux/shimx64.efi"
+  loop:
+    - "{{ kickstart_grub_rpm }}"
+    - "{{ kickstart_shim_rpm }}"
+
+- name: Create the netboot directories
+  become: true
+  ansible.builtin.file:
+    path: "{{ tftpboot_folder }}/almalinux/"
+    state: directory
+    owner: root
+    group: tftpd
+    mode: 0755
+
+- name: Copy the EFI boot files
+  become: true
+  ansible.builtin.copy:
+    remote_src: true
+    src: "{{ download_folder }}/{{ item  }}"
+    dest: "{{ tftpboot_folder }}/{{ item | basename }}"
+    mode: 0555
+    group: tftpd
+  loop:
+    - boot/efi/EFI/BOOT/BOOTX64.EFI
+    - boot/efi/EFI/almalinux/grubx64.efi
+    - boot/efi/EFI/almalinux/shimx64.efi
+
+- name: Install kernel
+  become: true
+  ansible.builtin.get_url:
+    url: "{{ kickstart_baseurl }}/images/pxeboot/vmlinuz"
+    dest: "{{ tftpboot_folder }}/almalinux/"
+    owner: root
+    group: root
+    mode: 0555
+
+- name: Install initrd.img
+  become: true
+  ansible.builtin.get_url:
+    url: "{{ kickstart_baseurl }}/images/pxeboot/initrd.img"
+    dest: "{{ tftpboot_folder }}/almalinux/"
+    owner: root
+    group: root
+    mode: 0444
+
+- name: Install grub menu
+  become: true
+  ansible.builtin.template:
+    src: grub.cfg.j2
+    dest: "{{ tftpboot_folder }}/grub.cfg"
+    owner: root
+    group: tftpd
+    mode: 0644
+...
