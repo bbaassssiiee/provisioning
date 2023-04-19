@@ -3,3 +3,4 @@
 ansible_user: vagrant
 docker_users:
   - vagrant
+kickstart_server: 192.168.56.30

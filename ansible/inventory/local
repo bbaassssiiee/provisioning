@@ -5,7 +5,6 @@ ansible_ssh_user=vagrant
 
 [local:children]
 web_servers
-postgres_servers
 proxy_servers
 
 [proxy_servers]
@@ -13,6 +12,3 @@ proxy ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpr
 
 [web_servers]
 web ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpreter=python3
-
-[postgres_servers]
-db ansible_ssh_host=127.0.0.1 ansible_connection=local ansible_python_interpreter=python3

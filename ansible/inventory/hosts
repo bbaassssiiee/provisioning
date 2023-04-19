@@ -6,15 +6,11 @@ ansible_ssh_user=vagrant
 ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
 
 [vagrant:children]
-postgres_servers
 proxy_servers
 web_servers
 
+[web_servers]
+web ansible_host=192.168.56.30
+
 [proxy_servers]
 proxy ansible_host=192.168.56.31
-
-[postgres_servers]
-db ansible_host=192.168.56.30
-
-[web_servers]
-web ansible_host=192.168.56.32
