@@ -42,7 +42,7 @@
 - name: Install kickstart file
   become: true
   ansible.builtin.template:
-    src: ../kickstart/ks.cfg
+    src: ks.cfg
     dest: "{{ ks_dir }}/ks.cfg"
     owner: root
     group: apache
