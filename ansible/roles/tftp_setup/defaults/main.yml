@@ -1,0 +1,11 @@
+---
+
+#
+# Default variables
+config_destination: "/etc/systemd/system/tftp.service.d"
+tftpboot_folder: /var/lib/tftpboot
+TFTP_user: tftpd
+TFTP_group_members: []
+start_on_boot: true
+enable_permanent_firewall: true
+desired_state: present
