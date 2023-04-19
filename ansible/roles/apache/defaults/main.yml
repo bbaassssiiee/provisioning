@@ -1,0 +1,9 @@
+---
+
+apache_packages:
+  - httpd
+  - httpd-filesystem
+  - mod_ssl
+
+desired_state: present
+...

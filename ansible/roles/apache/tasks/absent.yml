@@ -1,0 +1,67 @@
+---
+
+#
+- name: Collect the list of services
+  become: true
+  ansible.builtin.service_facts:
+  tags:
+    - apache
+
+- name: Disable webserver in firewalld
+  become: true
+  when:
+    - ansible_facts.services is defined
+    - "'firewalld.service' in ansible_facts.services"
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    immediate: true
+    permanent: true
+    state: disabled
+  loop:
+    - http
+    - https
+  tags:
+    - apache
+
+- name: Stop and disable Apache web server
+  become: true
+  ansible.builtin.systemd:
+    name: httpd
+    enabled: false
+    state: stopped
+  failed_when: false
+  tags:
+    - apache
+
+- name: Remove web server packages
+  become: true
+  ansible.builtin.package:
+    name: "{{ apache_packages }}"
+    state: absent
+  tags:
+    - apache
+
+- name: Remove Apache configuration
+  become: true
+  ansible.builtin.file:
+    path: /etc/httpd/
+    state: absent
+
+- name: Remove Apache data
+  become: true
+  ansible.builtin.file:
+    path: /var/www/
+    state: absent
+
+- name: Remove apache user
+  become: true
+  ansible.builtin.user:
+    name: apache
+    state: absent
+
+- name: Remove apache group
+  become: true
+  ansible.builtin.group:
+    name: apache
+    state: absent
+...
