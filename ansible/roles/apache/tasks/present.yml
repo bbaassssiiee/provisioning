@@ -1,0 +1,88 @@
+---
+
+- name: Create apache group
+  become: true
+  ansible.builtin.group:
+    name: apache
+    gid: 48
+    system: true
+    state: present
+
+- name: Create apache user
+  become: true
+  ansible.builtin.user:
+    name: apache
+    uid: 48
+    home: /usr/share/httpd
+    shell: /sbin/nologin
+    system: true
+    group: apache
+    state: present
+
+- name: Install web server
+  become: true
+  ansible.builtin.package:
+    name: "{{ apache_packages }}"
+    state: present
+  tags:
+    - apache
+
+- name: Ensure firewalld is running
+  become: true
+  ansible.builtin.systemd:
+    name: firewalld
+    enabled: true
+    state: started
+  tags:
+    - apache
+
+- name: Allow webserver in firewalld
+  become: true
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    immediate: true
+    permanent: true
+    state: enabled
+  loop:
+    - http
+    - https
+  tags:
+    - apache
+
+# Enable directory browsing in web server
+# This is a minimal change to the config:
+# Original line:
+#    Options -Indexes
+- name: Configure apache
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/httpd/conf.d/welcome.conf
+    regexp: '    Options'
+    line: '    Options Indexes'
+    state: present
+    mode: 0644
+  notify: Restart apache
+  tags:
+    - apache
+
+- name: Configure apache
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/httpd/conf.d/autoindex.conf
+    regexp: '^IndexIgnore'
+    line: 'IndexIgnore *~ *# HEADER* README* .git RCS CVS *,v *,t'
+    state: present
+    mode: 0644
+  notify: Restart apache
+  tags:
+    - apache
+
+- name: Start apache web server
+  become: true
+  ansible.builtin.systemd:
+    name: httpd
+    enabled: true
+    state: started
+  tags:
+    - apache
+...

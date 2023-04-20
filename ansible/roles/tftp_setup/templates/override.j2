@@ -1,0 +1,3 @@
+[Service]
+ExecStart=
+ExecStart=/usr/sbin/in.tftpd -s {{ tftpboot_folder }} -vv -u {{ TFTP_user }} -B 1468 --ipv4 --timeout 300

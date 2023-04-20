@@ -1,0 +1,47 @@
+---
+
+- name: Uninstall the tftp and tftp-server packages via yum
+  ansible.builtin.package:
+    name:
+      - tftp
+      - tftp-server
+    state: absent
+  become: true
+
+- name: Remove {{ TFTP_user }} user
+  ansible.builtin.user:
+    name: "{{ TFTP_user }}"
+    state: absent
+  become: true
+
+- name: Remove {{ TFTP_user }} group
+  ansible.builtin.group:
+    name: "{{ TFTP_user }}"
+    state: absent
+  become: true
+
+- name: Disallow TFTP server to read its home directory
+  when: ansible_facts.selinux.status in ['enforcing', 'permissive']
+  seboolean:
+    name: tftp_home_dir
+    state: false
+    persistent: true
+  become: true
+
+- name: Disable firewall for TFTP
+  ansible.posix.firewalld:
+    zone: internal
+    service: tftp
+    permanent: true
+    immediate: true
+    state: disabled
+  become: true
+
+- name: Remove TFTP server files and directories
+  ansible.builtin.file:
+    state: absent
+    path: "{{ item }}"
+  loop:
+    - "{{ config_destination }}"
+    - "{{ tftpboot_folder }}"
+...

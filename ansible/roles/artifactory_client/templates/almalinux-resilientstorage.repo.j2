@@ -1,9 +1,0 @@
-# almalinux-resilientstorage.repo
-
-[resilientstorage]
-name=AlmaLinux $releasever - ResilientStorage
-baseurl=https://{{ groups.artifactory_servers[0] }}/artifactory/{{ artifactory_rpm_repo }}/$releasever/ResilientStorage/$basearch/os/
-enabled=0
-gpgcheck=1
-countme=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux

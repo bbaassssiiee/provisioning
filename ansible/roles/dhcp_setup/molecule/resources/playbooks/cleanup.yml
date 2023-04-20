@@ -1,0 +1,14 @@
+---
+#
+- name: Cleanup
+  hosts: all
+  gather_facts: true
+  become: true
+  vars:
+    role_name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
+    desired_state: absent
+
+  tasks:
+    - name: Removing things created by role
+      ansible.builtin.include_role:
+        name: "{{ role_name }}"

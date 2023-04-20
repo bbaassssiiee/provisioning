@@ -1,0 +1,6 @@
+---
+
+#
+# vars are not meant to be changed
+tftpboot_folder: /var/lib/tftpboot
+ks_dir: /var/www/html/kickstart/

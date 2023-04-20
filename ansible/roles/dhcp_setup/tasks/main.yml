@@ -1,0 +1,63 @@
+---
+#
+# Tasks
+#
+- name: Install dhcp-server via yum
+  ansible.builtin.package:
+    name: dhcp-server
+    state: "{{ desired_state }}"
+  become: true
+
+- name: Setup absent state vars
+  when: desired_state == 'absent'
+  ansible.builtin.set_fact:
+    dhcpd_state: disabled
+    dhcpd_file_state: absent
+
+- name: Setup desired state vars
+  when: desired_state == 'present'
+  ansible.builtin.set_fact:
+    dhcpd_state: enabled
+    dhcpd_file_state: file
+
+- name: Fill in dhcpd.conf template and install it in the right directory.
+  when: desired_state == 'present'
+  ansible.builtin.template:
+    src: dhcpd.j2
+    dest: "{{ config_destination }}/dhcpd.conf"
+    mode: '0644'
+    validate: /sbin/dhcpd -t -cf %s
+  become: true
+
+- name: Enable service dhcpd
+  when: desired_state == 'present'
+  ansible.builtin.systemd:
+    name: dhcpd
+    enabled: "{{ start_on_boot }}"
+  notify: Start DHCPd
+  become: true
+
+- name: Ensure firewalld service is started
+  when: desired_state == 'present'
+  ansible.builtin.systemd:
+    name: firewalld
+    enabled: "{{ enable_permanent_firewall }}"
+    state: started
+  become: true
+
+- name: Manage firewall for dhcp and trigger reload
+  ansible.posix.firewalld:
+    zone: internal
+    service: dhcp
+    permanent: true
+    immediate: true
+    state: "{{ dhcpd_state }}"
+  become: true
+
+- name: Manage DHCP server configuration
+  ansible.builtin.file:
+    state: "{{ dhcpd_file_state }}"
+    path: "{{ config_destination }}/dhcpd.conf"
+    mode: '0644'
+  become: true
+...

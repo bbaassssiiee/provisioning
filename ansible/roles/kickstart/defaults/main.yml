@@ -1,0 +1,15 @@
+---
+
+#
+desired_state: present
+download_folder: /home/vagrant/
+
+installation_source_dir: install
+web_mount_dir: "/var/www/html/{{ installation_source_dir }}"
+installation_iso: AlmaLinux-8.7-x86_64-dvd.iso
+installation_iso_image: "{{ download_folder~installation_iso }}"
+kickstart_grub_rpm: grub2-efi-x64-2.02-142.el8.alma.x86_64.rpm
+kickstart_shim_rpm: shim-x64-15.6-1.el8.alma.x86_64.rpm
+kickstart_baseurl: "http://{{ kickstart_server }}/{{ installation_source_dir }}"
+kickstart_grub_url: "{{ kickstart_baseurl }}/BaseOS/Packages/{{ kickstart_grub_rpm }}"
+kickstart_shim_url: "{{ kickstart_baseurl }}/BaseOS/Packages/{{ kickstart_shim_rpm }}"

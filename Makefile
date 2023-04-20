@@ -31,14 +31,14 @@ packer:
 
 # Create image for Hyper-V
 output-${DISTRO}/${DISTRO}.x86_64.hyperv.box:
-	scripts/validate-iso.sh alma8.pkr.hcl 
+	scripts/validate-iso.sh alma8.pkr.hcl
 	packer build --only hyperv-iso.alma8 ${DISTRO}.pkr.hcl
 .PHONY: hyperv-image
 hyperv-image: output-${DISTRO}/${DISTRO}.x86_64.hyperv.box
 
 # Create image for VirtualBox
 output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box:
-	scripts/validate-iso.sh alma8.pkr.hcl 
+	scripts/validate-iso.sh alma8.pkr.hcl
 	packer build --only virtualbox-iso.alma8 ${DISTRO}.pkr.hcl
 .PHONY: virtualbox-image
 virtualbox-image: output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box
@@ -57,9 +57,8 @@ virtualbox-box: output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box
 vagrant-up:
 	vagrant validate
 	vagrant box list
-	vagrant up --no-provision alma8
-	vagrant provision alma8
-	vagrant scp alma8:/tmp/report.html .
+	vagrant up --no-provision proxy
+	vagrant provision proxy
 
 # Create resource group once for Azure
 .PHONY: resource-group
@@ -70,6 +69,11 @@ resource-group:
 .PHONY: storage-account
 storage-account:
 	az storage account create -l westeurope -g "${ARM_RESOURCE_GROUP}" -n "${ARM_STORAGE_ACCOUNT}" --sku Premium_LRS --https-only true
+
+# Create image for Azure
+.PHONY: azure-vm
+azure-vm:
+	az vm create --name alma8 --location westeurope --image /subscriptions/e754b34e-e957-489b-9698-0b07172e0f89/resourceGroups/VMImageResourceGroup/providers/Microsoft.Compute/images/almalinux8 --admin-username "${USER}" --plan-name 8-gen2 --plan-product almalinux --plan-publisher almalinux -g "${ARM_RESOURCE_GROUP}" --ssh-key-values "${HOME}/.ssh/id_rsa.pub" --size Standard_B2ms --nsg alma-nsg --public-ip-sku Standard
 
 # Create image for Azure
 .PHONY: azure-image

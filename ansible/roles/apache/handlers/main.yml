@@ -1,0 +1,8 @@
+---
+# Handlers
+- name: Restart apache
+  become: true
+  ansible.builtin.systemd:
+    name: httpd
+    state: restarted
+    enabled: true

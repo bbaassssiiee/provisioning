@@ -1,0 +1,37 @@
+---
+
+- name: See if mount directory exists
+  ansible.builtin.stat:
+    path: "{{ web_mount_dir }}"
+  register: mount_dir
+
+- name: Mount RHEL ISO
+  when: not mount_dir.stat.exists
+  become: true
+  ansible.builtin.mount:
+    path: "{{ web_mount_dir }}"
+    src: "{{ installation_iso_image }}"
+    opts: ro,loop
+    fstype: iso9660
+    state: unmounted
+  tags:
+    - notest
+
+- name: Remove kickstart directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ ks_dir }}"
+    state: absent
+
+- name: Remove the package downloads
+  become: true
+  ansible.builtin.file:
+    state: absent
+    path: "{{ download_folder }}/{{ item }}"
+  loop:
+    - "{{ kickstart_grub_rpm }}"
+    - "{{ kickstart_shim_rpm }}"
+    - boot
+    - etc
+
+...

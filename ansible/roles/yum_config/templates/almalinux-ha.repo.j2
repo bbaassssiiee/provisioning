@@ -1,0 +1,9 @@
+# almalinux-ha.repo
+
+[ha]
+name=AlmaLinux $releasever - HighAvailability
+baseurl={{ repo_url }}/$releasever/HighAvailability/$basearch/os/
+enabled=0
+gpgcheck=1
+countme=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux

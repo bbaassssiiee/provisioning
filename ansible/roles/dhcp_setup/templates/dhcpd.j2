@@ -1,0 +1,43 @@
+set vendorclass = option vendor-class-identifier;
+option pxe-system-type code 93 = unsigned integer 16;
+set pxetype = option pxe-system-type;
+
+option domain-name "{{ domain_name }}";
+
+authoritative;
+
+# General DHCP configuration.
+subnet 192.168.56.0 netmask 255.255.255.0 {
+  option domain-name-servers 10.0.2.3;
+  option broadcast-address 192.168.56.255;
+  option routers 192.168.56.1;
+
+  default-lease-time 7200;
+  max-lease-time 28800;
+  if substring(vendorclass, 0, 9)="PXEClient" {
+
+	# UEFI boot for 64-bit UEFI systems (00:07) and 32-bit UEFI systems (00:06)
+    if pxetype=00:06 or pxetype=00:07 {
+	  # Filename is a file that resides on the TFTPserver.
+	  # Therefore it is possible to enter other UEFI images here.
+      filename "{{ boot_filename }}";
+    }
+  }
+  pool {
+    range 192.168.56.101 192.168.56.200;
+  }
+  next-server 192.168.56.30;
+}
+
+# No service will be given on these subnets, but declaring them helps the
+# DHCP server to understand the network topology. Add networks other than the 10.0.0.x
+# network here
+subnet 192.168.178.0 netmask 255.255.255.0 {
+}
+subnet 192.168.100.0 netmask 255.255.255.0 {
+}
+subnet 192.168.1.0 netmask 255.255.255.0 {
+}
+subnet 10.0.2.0 netmask 255.255.255.0 {
+}
+

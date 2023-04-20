@@ -1,0 +1,27 @@
+---
+
+#
+# Galaxy
+
+galaxy_info:
+  role_name: apache
+  namespace: bbaassssiiee
+  author: Bas Meijer
+  description: Apache for Kickstart
+
+  license: MIT
+
+  min_ansible_version: "2.10.0"
+
+  platforms:
+    - name: EL
+      versions:
+        - "8"
+  galaxy_tags:
+    - system
+    - kickstart
+    - yum
+    - apache
+    - httpd
+
+dependencies: []

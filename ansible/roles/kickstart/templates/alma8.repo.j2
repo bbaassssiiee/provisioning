@@ -1,0 +1,21 @@
+[baseos]
+name=AlmaLinux $releasever - BaseOS
+baseurl=http://{{ kickstart_server }}/{{ installation_source_dir }}/BaseOS
+mediaid=None
+metadata_expire=-1
+gpgcheck=0
+cost=500
+enabled=True
+sslverify=0
+proxy=_none_
+
+[appstream]
+name=AlmaLinux $releasever - AppStream
+baseurl=http://{{ kickstart_server }}/{{ installation_source_dir }}/AppStream
+mediaid=None
+metadata_expire=-1
+gpgcheck=0
+cost=500
+enabled=True
+sslverify=0
+proxy=_none_

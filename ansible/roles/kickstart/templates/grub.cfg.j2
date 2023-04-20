@@ -1,0 +1,9 @@
+set default=0
+set timeout=60
+menuentry "Continue booting..." {
+    exit
+}
+menuentry 'Install AlmaLinux 8' {
+  linuxefi (tftp)almalinux/vmlinuz ip=dhcp inst.stage2=http://{{ kickstart_server}}/{{ installation_source_dir }} inst.lang=en_US inst.keymap=us inst.ks=http://{{ kickstart_server }}/kickstart/ks.cfg
+  initrdefi (tftp)almalinux/initrd.img
+}

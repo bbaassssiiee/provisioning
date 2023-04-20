@@ -1,0 +1,28 @@
+---
+
+#
+dependency:
+  name: galaxy
+driver:
+  name: delegated
+  options:
+    managed: false
+    ansible_connection_options:
+      ansible_connection: local
+lint: |
+  set -e
+  ansible-lint
+  yamllint .
+  flake8 --max-line-length=100
+platforms:
+  - name: localhost
+
+provisioner:
+  name: ansible
+  playbooks:
+    cleanup: ../resources/playbooks/cleanup.yml
+    converge: ../resources/playbooks/converge.yml
+
+verifier:
+  name: testinfra
+  directory: ../resources/tests/
