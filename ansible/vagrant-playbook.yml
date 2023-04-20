@@ -1,5 +1,21 @@
 #!/usr/bin/env ansible-playbook
 ---
+- name: Create Kickstart server
+  hosts: kickstart
+  become: true
+  gather_facts: true
+  vars:
+    # For the kickstarted client
+    main_user: "{{ lookup('env', 'KS_USER') }}"
+    main_password: "{{ lookup('env', 'KS_PASSWORD') }}"
+  tags:
+    - kickstart
+  roles:
+    - apache
+    - tftp_setup
+    - kickstart
+    - dhcp_setup
+
 - name: Deploy Proxy
   hosts: proxy
   become: true
@@ -8,17 +24,5 @@
     - proxy
   roles:
     - role: proxy
-
-- name: Create Kickstart server
-  hosts: web
-  become: true
-  gather_facts: true
-  tags:
-    - web
-  roles:
-    - apache
-    - tftp_setup
-    - kickstart
-    - dhcp_setup
 
 ...

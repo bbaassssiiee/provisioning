@@ -1,0 +1,153 @@
+#version=RHEL8
+# License agreement
+eula --agreed
+# Reboot after installation
+reboot --eject
+# Use text mode install
+text
+
+repo --name="BaseOS" --baseurl=http://{{ kickstart_server}}/{{ installation_source_dir }}/BaseOS
+repo --name="AppStream" --baseurl=http://{{ kickstart_server}}/{{ installation_source_dir }}/AppStream
+
+%pre --erroronfail
+/usr/bin/dd bs=512 count=10 if=/dev/zero of=/dev/sda
+/usr/sbin/parted -s /dev/sda mklabel gpt
+/usr/sbin/parted -s /dev/sda print
+%end
+
+%post --erroronfail
+rm -f /etc/dconf/db/gdm.d/00-security-settings
+
+# /tmp is restricted by mount options
+mkdir /var/tmp
+chmod 1777 /var/tmp
+# add vagrant's public key - user can ssh without password
+echo "installing ssh-key for vagrant"
+mkdir -p /home/vagrant/.ssh
+chmod 0700 /home/vagrant/.ssh
+curl -q -o /home/vagrant/.ssh/authorized_keys https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant.pub
+chmod 0600 /home/vagrant/.ssh/authorized_keys
+chown -R vagrant:vagrant /home/vagrant/.ssh
+restorecon -R -v /home/vagrant/.ssh
+
+# permit root login via SSH with password authetication
+echo "PermitRootLogin yes" > /etc/ssh/sshd_config.d/01-permitrootlogin.conf
+
+# allow vagrant user to run everything without a password
+echo "vagrant     ALL=(ALL)     NOPASSWD: ALL" >> /etc/sudoers.d/vagrant
+
+# see Vagrant documentation (https://docs.vagrantup.com/v2/boxes/base.html)
+# for details about the requiretty.
+sed -i "s/^.*requiretty/# Defaults requiretty/" /etc/sudoers
+
+%end
+
+%packages --ignoremissing --excludedocs --instLangs=en_US.UTF-8
+@core
+glibc-langpack-en
+langtable
+bzip2
+dracut-config-generic
+grub2-pc
+grub2-efi-modules
+tar
+usermode
+-biosdevname
+-dnf-plugin-spacewalk
+-dracut-config-rescue
+-iprutils
+-iwl*-firmware
+-langpacks-*
+-mdadm
+-open-vm-tools
+-plymouth
+-rhn*
+%end
+
+# Keyboard layouts
+keyboard --vckeymap=us --xlayouts='us'
+# System language
+lang en_US.UTF-8
+
+# Firewall configuration
+firewall --enabled --ssh
+# Network information
+network --bootproto=dhcp --device=link --hostname=alma8 --activate
+
+# Use network installation
+url --url=http://{{ kickstart_server}}/{{ installation_source_dir }}
+
+# System authorization information
+authselect --enableshadow --passalgo=sha512 --kickstart
+# SELinux configuration
+selinux --enforcing
+
+firstboot --disable
+# Do not configure the X Window System
+skipx
+# System services
+services --enabled="NetworkManager,sshd"
+
+ignoredisk --only-use=sda
+
+# Partition information
+
+zerombr
+bootloader --location=boot --append="rhgb quiet crashkernel=auto net.ifnames=0" --iscrypted --password=grub.pbkdf2.sha512.10000.1B3130AFBF25C96CEA916C5692D897FB65A138FF50AA1BCAF015E23480FEF3101A1A058A3892A266DB6FD5F4D02A3FE91E2095B60135EEA212E0DD5A38E25471.87F7A5FB336347A0192B52C81F57B31C4A91BEEBEDD88CC466A868A56E7AEE6E2FFA4E1DE33FF8368730242361480F0C61E90044985CA2792C8D5E73FFC3A4EF
+clearpart --all --drives=sda --initlabel
+
+# Create primary system partitions (required for installs)
+part biosboot --fstype=biosboot --size=1
+part /boot/efi --fstype=efi --label EFI --size=600
+part /boot --fstype=ext4 --label BOOT --size=1024 --fsoptions="nodev,nosuid,noexec"
+part pv.01 --size=20480 --ondrive=sda --grow
+
+# Create a Logical Volume Management (LVM) group (optional)
+volgroup vgsys pv.01
+
+# Create particular logical volumes (optional)
+logvol / --fstype=xfs --name=lv_root --vgname=vgsys --size=4096 --grow
+# rhel8cis_rule_1_1_7: Ensure /home Located On Separate Partition
+logvol /home --fstype=xfs --name=lv_home --vgname=vgsys --size=1024 --fsoptions="nodev" --grow
+# rhel8cis_rule_1_1_2: Ensure /tmp Located On Separate Partition
+logvol /tmp --fstype=xfs --name=lv_tmp --vgname=vgsys --size=1024 --fsoptions="nodev,noexec,nosuid"
+# rhel8cis_rule_1_1_3: Ensure /var Located On Separate Partition
+logvol /var --fstype=xfs --name=lv_var --vgname=vgsys --size=2048 --fsoptions="nodev" --grow
+# rhel8cis_rule_1_1_4 Ensure /var/tmp Located On Separate Partition
+logvol /var/tmp --fstype=xfs --name=lv_vartmp --vgname=vgsys --size=2048 --fsoptions="nodev,noexec,nosuid"
+# rhel8cis_rule_1_1_5: Ensure /var/log Located On Separate Partition
+logvol /var/log --fstype=xfs --name=lv_log --vgname=vgsys --size=1024 --fsoptions="nodev,nosuid,noexec"
+# rhel8cis_rule_1_1_6: Ensure /var/log/audit Located On Separate Partition
+logvol /var/log/audit --fstype=xfs --name=lv_adm --vgname=vgsys --size=512 --fsoptions="nodev,nosuid,noexec"
+logvol swap --name=lv_swap --vgname=vgsys --size=2016
+
+# System timezone
+timezone UTC --utc
+
+# Root password
+rootpw --iscrypted {{ main_password | password_hash('sha512') }}
+user --groups=wheel --name={{ main_user }} --iscrypted --password={{ main_password | password_hash('sha512') }}
+
+# The OpenSCAP installer add-on is used to apply SCAP (Security Content Automation Protocol)
+# content - security policies - on the installed system.This add-on has been enabled by default
+# since Red Hat Enterprise Linux 7.2. When enabled, the packages necessary to provide this
+# functionality will automatically be installed. However, by default, no policies are enforced,
+# meaning that no checks are performed during or after installation unless specifically configured.
+
+%addon org_fedora_oscap
+    content-type = scap-security-guide
+    profile = xccdf_org.ssgproject.content_profile_cis
+%end
+# disable kdump service
+%addon com_redhat_kdump --disable --reserve-md="auto"
+
+%end
+
+# This PAM policy is used in development
+%anaconda
+pwpolicy root --minlen=6 --minquality=1 --notstrict --nochanges --notempty
+pwpolicy user --minlen=6 --minquality=1 --notstrict --nochanges --notempty
+pwpolicy luks --minlen=6 --minquality=1 --notstrict --nochanges --notempty
+%end
+
+
