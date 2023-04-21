@@ -1,0 +1,58 @@
+---
+# main vars file
+pam_files:
+  - src: login.j2
+    dest: /etc/pam.d/login
+  - src: password-auth.j2
+    dest: /etc/authselect/password-auth
+  - src: postlogin.j2
+    dest: /etc/authselect/postlogin
+  - src: remote.j2
+    dest: /etc/pam.d/remote
+  - src: sudo.j2
+    dest: /etc/pam.d/sudo
+  - src: su.j2
+    dest: /etc/pam.d/su
+  - src: system-auth.j2
+    dest: /etc/authselect/system-auth
+
+service: usbguard
+security_conf_files:
+  - src: login.defs.j2
+    dest: /etc/login.defs
+  - src: faillock.conf.j2
+    dest: /etc/security/faillock.conf
+  - src: pwquality.conf.j2
+    dest: /etc/security/pwquality.conf
+security_packages:
+  - authselect
+  - pam
+  - aide
+
+security_logindefs_umask: "077"  # literal string
+security_logindefs_pass_max_days: 60
+security_logindefs_pass_min_days: 7
+security_logindefs_pass_min_len: 15
+security_logindefs_create_home: "yes"  # literal string
+security_logindefs_encrypt_method: SHA512
+security_logindefs_fail_delay: 4
+security_logindefs_sha_crypt_min_rounds: 5000
+security_faillock_fail_interval: 900
+security_faillock_unlock_time: 900
+security_faillock_deny: 3
+security_faillock_dir: /var/log/faillock
+security_faillock_silent: silent
+security_faillock_audit: audit
+security_faillock_even_deny_root: even_deny_root
+security_usbguard_audit_backend: LinuxAudit
+security_pwquality_retry: 3
+security_pwquality_dictcheck: 1
+security_pwquality_ocredit: -1
+security_pwquality_ucredit: -1
+security_pwquality_dcredit: -1
+security_pwquality_lcredit: -1
+security_pwquality_maxclassrepeat: 4
+security_pwquality_maxrepeat: 3
+security_pwquality_minclass: 4
+security_pwquality_difok: 8
+security_pwquality_minlen: 15

@@ -7,5 +7,3 @@ roles:
     name: rhel8cis
   - src: https://github.com/ansiblebook/ansible_role_ssh.git
     name: openssh
-  - src: https://github.com/dockpack/base_line.git
-    name: base_line

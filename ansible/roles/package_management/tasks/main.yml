@@ -1,0 +1,40 @@
+---
+
+- name: Re-configure for proxied use
+  block:
+    - name: Configure proxy for package management
+      environment: "{{ proxy_env | default(omit) }}"
+      ansible.builtin.template:
+        src: dnf.conf.j2
+        dest: /etc/dnf/dnf.conf
+        owner: root
+        group: root
+        mode: 0600
+      no_log: false
+    
+    - name: Configure proxy for pip
+      environment: "{{ proxy_env | default(omit) }}"
+      ansible.builtin.template:
+        src: pip.conf.j2
+        dest: /etc/pip.conf
+        owner: root
+        group: root
+        mode: 0600
+      no_log: false
+    
+    - name: Remove unneeded repo files
+      ansible.builtin.file:
+        path: "/etc/yum.repos.d/{{ item }}"
+        state: absent
+      loop: "{{ yum_repofiles_unneeded }}"
+    
+    - name: Point repo files to repo_url
+      ansible.builtin.template:
+        src: "{{ item }}.j2"
+        dest: "/etc/yum.repos.d/{{ item }}"
+        owner: root
+        group: root
+        mode: 0600
+      loop: "{{ yum_repofiles_needed }}"
+  when: 
+    - proxy_host | length > 3
