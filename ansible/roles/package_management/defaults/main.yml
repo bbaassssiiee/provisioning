@@ -2,3 +2,4 @@
 artifactory_rpm_repo: 'almalinux-remote'
 repo_url: "https://{{ groups.artifactory_servers[0] }}/artifactory/{{ artifactory_rpm_repo }}"
 sslverify: 'True'
+proxy_url: "{{ proxy_proto | default('http') }}://{{ proxy_user ~ ':' }}{{ proxy_password ~ '@' }}{{ proxy_host }}{{ ':' ~ proxy_port }}"

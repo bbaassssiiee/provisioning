@@ -1,0 +1,7 @@
+#%PAM-1.0
+{{ ansible_managed | comment }}
+{{ "Generated in role '%s'" | format(role_name) | comment }}
+auth       include      system-auth
+account    include      system-auth
+password   include      system-auth
+session    include      system-auth

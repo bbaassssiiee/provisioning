@@ -52,6 +52,7 @@
   ansible.builtin.file:
     path: /var/www/
     state: absent
+  ignore_errors: true  # mounted DVD
 
 - name: Remove apache user
   become: true

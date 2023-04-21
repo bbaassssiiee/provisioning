@@ -1,28 +1,21 @@
 #!/usr/bin/env ansible-playbook
+# Usage: ./ks-server-playbook.yml -i inventory/hosts -e main_user=vagrant -e main_password=vagrant
 ---
 - name: Create Kickstart server
   hosts: kickstart
   become: true
   gather_facts: true
-  vars:
-    # For the kickstarted client
-    main_user: "{{ lookup('env', 'KS_USER') }}"
-    main_password: "{{ lookup('env', 'KS_PASSWORD') }}"
+  pre_tasks:
+    - name: Check extra vars main_user and main_password
+      ansible.builtin.assert:
+        that:
+          - main_user is defined or desired_state == 'absent'
+          - main_password | length >= 14 or desired_state == 'absent'
   tags:
     - kickstart
   roles:
+    - dual_homed
     - apache
     - tftp_setup
     - kickstart
     - dhcp_setup
-
-- name: Deploy Proxy
-  hosts: proxy
-  become: true
-  gather_facts: true
-  tags:
-    - proxy
-  roles:
-    - role: proxy
-
-...
