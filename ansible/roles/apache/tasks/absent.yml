@@ -12,6 +12,7 @@
   when:
     - ansible_facts.services is defined
     - "'firewalld.service' in ansible_facts.services"
+    - ansible_facts.services['firewalld.service'].state == 'running'
   ansible.posix.firewalld:
     service: "{{ item }}"
     immediate: true
@@ -20,6 +21,8 @@
   loop:
     - http
     - https
+  vars:
+    ansible_python_interpreter: /usr/libexec/platform-python
   tags:
     - apache
 
@@ -47,12 +50,18 @@
     path: /etc/httpd/
     state: absent
 
+- name: Unmount installation ISO
+  become: true
+  ansible.posix.mount:
+    path: /var/www/html/install
+    state: absent
+
 - name: Remove Apache data
   become: true
   ansible.builtin.file:
     path: /var/www/
     state: absent
-  ignore_errors: true  # mounted DVD
+  failed_when: false
 
 - name: Remove apache user
   become: true

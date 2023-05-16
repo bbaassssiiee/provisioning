@@ -1,11 +1,15 @@
 ---
 
-  - name: Add an Ethernet connection with static IP configuration
-    community.general.nmcli:
-      autoconnect: true
-      conn_name: eth1
-      ifname: eth1
-      type: ethernet
-      ip4: 192.168.56.30/24
-      gw4: 192.168.56.1
-      state: present
+- name: Set kickstart_ifname to the second network adapter
+  ansible.builtin.set_fact:
+    kickstart_ifname: "{{ ansible_interfaces | difference(['lo', ansible_default_ipv4.alias]) | sort | first }}"
+
+- name: Add an Ethernet connection with static IP configuration
+  community.general.nmcli:
+    autoconnect: true
+    conn_name: "{{ kickstart_ifname }}"
+    ifname: "{{ kickstart_ifname }}"
+    type: ethernet
+    ip4: "{{ kickstart_server }}/24"
+    gw4: "{{ kickstart_server.split('.')[0:3] | join('.') }}.1"
+    state: "{{ desired_state | default('present') }}"

@@ -8,34 +8,45 @@
     state: absent
   become: true
 
-- name: Remove {{ TFTP_user }} user
+- name: Remove user {{ tftp_user }}
   ansible.builtin.user:
-    name: "{{ TFTP_user }}"
+    name: "{{ tftp_user }}"
     state: absent
   become: true
 
-- name: Remove {{ TFTP_user }} group
+- name: Remove group {{ tftp_user }}
   ansible.builtin.group:
-    name: "{{ TFTP_user }}"
+    name: "{{ tftp_user }}"
     state: absent
   become: true
 
 - name: Disallow TFTP server to read its home directory
   when: ansible_facts.selinux.status in ['enforcing', 'permissive']
-  seboolean:
+  ansible.posix.seboolean:
     name: tftp_home_dir
     state: false
     persistent: true
   become: true
 
+- name: Collect the list of services
+  become: true
+  ansible.builtin.service_facts:
+  tags:
+    - apache
+
 - name: Disable firewall for TFTP
+  when:
+    - ansible_facts.services is defined
+    - "'firewalld.service' in ansible_facts.services"
+    - ansible_facts.services['firewalld.service'].state == 'running'
   ansible.posix.firewalld:
-    zone: internal
     service: tftp
     permanent: true
     immediate: true
     state: disabled
   become: true
+  vars:
+    ansible_python_interpreter: /usr/libexec/platform-python
 
 - name: Remove TFTP server files and directories
   ansible.builtin.file:

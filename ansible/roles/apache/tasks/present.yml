@@ -46,6 +46,8 @@
   loop:
     - http
     - https
+  vars:
+    ansible_python_interpreter: /usr/libexec/platform-python
   tags:
     - apache
 
@@ -60,7 +62,7 @@
     regexp: '    Options'
     line: '    Options Indexes'
     state: present
-    mode: 0644
+    mode: '0644'
   notify: Restart apache
   tags:
     - apache
@@ -72,7 +74,7 @@
     regexp: '^IndexIgnore'
     line: 'IndexIgnore *~ *# HEADER* README* .git RCS CVS *,v *,t'
     state: present
-    mode: 0644
+    mode: '0644'
   notify: Restart apache
   tags:
     - apache

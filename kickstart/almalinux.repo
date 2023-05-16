@@ -1,0 +1,13 @@
+[BaseOS]
+name=BaseOS
+baseurl=file:///var/www/html/install/BaseOS
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux
+
+[AppStream]
+name=AppStream
+baseurl=file:///var/www/html/install/AppStream
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux

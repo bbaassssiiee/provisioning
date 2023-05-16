@@ -4,5 +4,5 @@
 # Tasks
 #
 - name: Desired state
-  include_tasks: "{{ desired_state }}.yml"
+  ansible.builtin.include_tasks: "{{ desired_state }}.yml"
 ...

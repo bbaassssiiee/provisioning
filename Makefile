@@ -31,15 +31,14 @@ packer:
 
 # Create image for Hyper-V
 output-${DISTRO}/${DISTRO}.x86_64.hyperv.box:
-	scripts/validate-iso.sh alma8.pkr.hcl
-	packer build --only hyperv-iso.alma8 ${DISTRO}.pkr.hcl
+	packer build --only hyperv-iso.alma8 .
 .PHONY: hyperv-image
 hyperv-image: output-${DISTRO}/${DISTRO}.x86_64.hyperv.box
 
 # Create image for VirtualBox
 output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box:
 	scripts/validate-iso.sh alma8.pkr.hcl
-	packer build --only virtualbox-iso.alma8 ${DISTRO}.pkr.hcl
+	packer build --only virtualbox-iso.alma8 .
 .PHONY: virtualbox-image
 virtualbox-image: output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box
 
@@ -78,7 +77,7 @@ azure-vm:
 # Create image for Azure
 .PHONY: azure-image
 azure-image:
-	packer build --only azure-arm.alma8 ${DISTRO}.pkr.hcl
+	packer build --only azure-arm.alma8 .
 
 .PHONY: hyperv
 hyperv: hyperv-box vagrant-up
