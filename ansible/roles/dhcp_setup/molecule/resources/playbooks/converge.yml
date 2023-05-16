@@ -10,5 +10,5 @@
   tasks:
     - name: Play the role
       ansible.builtin.include_role:
-        name: "{{ role_name  }}"
+        name: "{{ role_name }}"
 ...

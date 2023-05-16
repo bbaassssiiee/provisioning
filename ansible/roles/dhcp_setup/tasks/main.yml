@@ -46,12 +46,15 @@
   become: true
 
 - name: Manage firewall for dhcp and trigger reload
+  when: desired_state == 'present'
   ansible.posix.firewalld:
     zone: internal
     service: dhcp
     permanent: true
     immediate: true
     state: "{{ dhcpd_state }}"
+  vars:
+    ansible_python_interpreter: /usr/libexec/platform-python
   become: true
 
 - name: Manage DHCP server configuration

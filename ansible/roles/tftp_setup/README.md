@@ -14,8 +14,8 @@ molecule test -s labvm
 
 - `config_destination`: Where the TFTP config override snippet for systemd should be installed (Default: `/etc/systemd/system/tftp.service.d`)
 - `tftpboot_folder`: TFTP home folder, where files should be offered via tftp (Default: `/var/lib/tftpboot`)
-- `TFTP_user`: Under which user the TFTP server should run when transferring files (Default: tftpd) __Note: this name is also used to name the group assumed by the TFTP server.__
-- `TFTP_group_members`: The list of users who should be made member of the group assumed by the TFTP server. (Default: None)
+- `tftp_user`: Under which user the TFTP server should run when transferring files (Default: tftpd) __Note: this name is also used to name the group assumed by the TFTP server.__
+- `tftp_group_members`: The list of users who should be made member of the group assumed by the TFTP server. (Default: None)
 - `start_on_boot`: (Default: true)
 - `enable_permanent_firewall`: (Default: true)
 

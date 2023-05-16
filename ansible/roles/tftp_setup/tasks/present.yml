@@ -10,18 +10,18 @@
     state: present
   become: true
 
-- name: Make sure group {{ TFTP_user }} exists
+- name: Make sure group exists
   ansible.builtin.group:
-    name: "{{ TFTP_user }}"
+    name: "{{ tftp_user }}"
     system: true
     local: true
     state: present
   become: true
 
-- name: Make sure user {{ TFTP_user }} exists
+- name: Make sure user exists
   ansible.builtin.user:
-    name: "{{ TFTP_user }}"
-    group: "{{ TFTP_user }}"
+    name: "{{ tftp_user }}"
+    group: "{{ tftp_user }}"
     home: "{{ tftpboot_folder }}"
     comment: TFTP service account
     create_home: false
@@ -33,17 +33,17 @@
     state: present
   become: true
 
-- name: Add specified users to group {{ TFTP_user }}
+- name: Add specified users to group {{ tftp_user }}
   ansible.builtin.user:
     name: "{{ item }}"
     # note that append and groups are mutually exclusive with local: true
     append: true
-    groups: "{{ [ TFTP_user ] }}"
+    groups: "{{ [tftp_user] }}"
   become: true
-  loop: "{{ TFTP_group_members }}"
+  loop: "{{ tftp_group_members }}"
 
-# Note that we don't need to remove the {{ TFTP_user }} group from
-# {{ TFTP_group_members }} because when the group is removed members loose
+# Note that we don't need to remove the {{ tftp_user }} group from
+# {{ tftp_group_members }} because when the group is removed members loose
 # their membership automatically.
 - name: Create tftpboot home
   ansible.builtin.file:
@@ -51,11 +51,11 @@
     state: directory
     # Note the sticky group bit
     mode: '02775'
-    owner: "{{ TFTP_user }}"
-    group: "{{ TFTP_user }}"
+    owner: "{{ tftp_user }}"
+    group: "{{ tftp_user }}"
   become: true
 
-- name: Make sure {{ config_destination }} exists
+- name: Make sure config_destination exists
   ansible.builtin.file:
     name: "{{ config_destination }}"
     state: directory
@@ -80,7 +80,7 @@
 
 - name: Allow TFTP server to read its home directory
   when: ansible_facts.selinux.status in ['enforcing', 'permissive']
-  seboolean:
+  ansible.posix.seboolean:
     name: tftp_home_dir
     state: true
     persistent: true
@@ -93,20 +93,21 @@
     immediate: true
     state: enabled
   become: true
+  vars:
+    ansible_python_interpreter: /usr/libexec/platform-python
 
 - name: Find files and subdirectories under {{ tftpboot_folder }}
   ansible.builtin.find:
-    paths: "{{ [ tftpboot_folder ] }}"
+    paths: "{{ [tftpboot_folder] }}"
     recurse: true
     file_type: any
   register: found
   become: true
 
-- name: "Fix permission and group membership of files and subdirectories \
-  of {{ tftpboot_folder }}"
+- name: Fix permissions of {{ tftpboot_folder }}
   ansible.builtin.file:
     path: "{{ item.path }}"
-    group: "{{ TFTP_user }}"
+    group: "{{ tftp_user }}"
     # See chmod(1) for an explanation of X
     mode: "{{ 'u=rwx,g=rwxs,o=rx' if item.isdir else 'u=rwX,g=rwX,o=rX' }}"
     modification_time: preserve
