@@ -13,3 +13,4 @@ report.html
 ansible/roles/rhel8cis
 ansible/roles/base_line/
 ansible/roles/openssh/
+ansible/collections/requirements.yml
