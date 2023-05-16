@@ -7,19 +7,39 @@
   gather_facts: true
 
   vars:
-    crypto_policy: DEFAULT
+    crypto_policy: FIPS
+    # We would rather use FUTURE, but
+    # pypi.python.org still uses 2048-bit RSA.
+
+  pre_tasks:
+    - name: Set proxy environment
+      ansible.builtin.set_fact:
+        proxy_env:
+          HTTPS_PROXY: "{{ https_proxy | default(omit) }}"
+          PROXY_USER: "{{ proxy_user | default(omit) }}"
+          PROXY_PASSWORD: "{{ proxy_password | default(omit) }}"
+      no_log: true
+
   roles:
-    - role: yum_config
+    - role: package_management
       repo_url: 'https://mirrors.xtom.nl/almalinux'
       # repo url is a mirror or internal repo/proxy for the RPM
       # xtom.nl is the only mirror usable with crypto_policy: FUTURE
     - role: rhel8cis
-      rhel8cis_rule_1_1_1_2: false
-      rhel8cis_rule_5_2_15: false
+      rhel8cis_rule_1_1_1_3: false  # UDF file systems module required on Azure
       rhel8cis_rule_5_3_4: false
       rhel8cis_ssh_loglevel: VERBOSE
       rhel8cis_remote_log_server: loghost
       rhel8cis_crypto_policy: "{{ crypto_policy }}"
+      rhel8cis_auditd:
+        space_left_action: EMAIL
+        action_mail_acct: root
+        admin_space_left_action: HALT
+        max_log_file_action: rotate
+      allow_auditd_uid_user_exclusions: true
+      rhel8cis_auditd_uid_exclude:
+        - vagrant
+        - admin
     - openssh
     - base_line
 

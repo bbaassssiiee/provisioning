@@ -9,8 +9,8 @@
     - name: Check extra vars main_user and main_password
       ansible.builtin.assert:
         that:
-          - main_user is defined or desired_state == 'absent'
-          - main_password | length >= 14 or desired_state == 'absent'
+          - desired_state == 'absent' or main_user is defined
+          - desired_state == 'absent' or main_password is defined
   tags:
     - kickstart
   roles:
