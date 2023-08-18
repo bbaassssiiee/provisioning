@@ -17,3 +17,4 @@ kickstart ansible_host=192.168.56.30
 proxy ansible_host=192.168.56.31
 
 [web_servers]
+web ansible_host=192.168.56.32
