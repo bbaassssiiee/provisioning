@@ -100,7 +100,7 @@ source "virtualbox-iso" "alma8" {
   rtc_time_base            = "UTC"
   shutdown_command         = "echo 'vagrant' | sudo -S /sbin/halt -h -p"
   ssh_password             = "vagrant"
-  ssh_username             = "vagrant"
+  ssh_username             = "root"
   ssh_wait_timeout         = "10000s"
   usb                      = true
   vboxmanage = [
@@ -134,11 +134,11 @@ build {
   }
   provisioner "ansible-local" {
     extra_arguments = [ "-vv",
-      "-e", "ansible_python_interpreter=/usr/libexec/platform-python", 
+      "-e", "ansible_python_interpreter=/usr/libexec/platform-python",
       "-e", "proxy_proto=${var.proxy_proto}",
       "-e", "proxy_host=${var.proxy_host}",
       "-e", "proxy_port=${var.proxy_port}",
-      "-e", "proxy_user=${var.proxy_user}", 
+      "-e", "proxy_user=${var.proxy_user}",
       "-e", "proxy_password=${var.proxy_password}", ]
     galaxy_file     = "./ansible/roles/requirements.yml"
     galaxy_command  = "${var.https_proxy} ansible-galaxy"
