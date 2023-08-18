@@ -96,7 +96,7 @@ ENV['KS_PASSWORD'] = "vagrant"
         # Download dependencies
         ansible.galaxy_role_file = "ansible/roles/requirements.yml"
         ansible.galaxy_roles_path = "ansible/roles"
-        ansible.inventory_path = "ansible/inventory/hosts"
+        ansible.inventory_path = "ansible/inventory"
         ansible.playbook = "ansible/vagrant-playbook.yml"
         ansible.groups = {
           "kickstart" => ["kickstart"],

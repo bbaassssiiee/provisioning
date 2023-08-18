@@ -1,5 +1,5 @@
 #!/usr/bin/env ansible-playbook
-# Usage: ./ks-server-playbook.yml -i inventory/hosts -e main_user=vagrant -e main_password=vagrant
+# Usage: ./ks-server.yml -i inventory -e main_user=vagrant -e main_password=vagrant
 ---
 - name: Create Kickstart server
   hosts: kickstart
