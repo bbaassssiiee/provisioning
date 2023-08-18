@@ -5,7 +5,7 @@ collections:
 
 roles:
   - src: https://github.com/ansible-lockdown/RHEL8-CIS.git
-    version: may23_updates
+    version: devel
     name: rhel8cis
   - src: https://github.com/ansiblebook/ansible_role_ssh.git
     name: openssh
