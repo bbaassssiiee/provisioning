@@ -7,7 +7,7 @@
   gather_facts: true
 
   vars:
-    crypto_policy: FIPS
+    crypto_policy: DEFAULT
     # We would rather use FUTURE, but
     # pypi.python.org still uses 2048-bit RSA.
 
@@ -26,19 +26,10 @@
       # repo url is a mirror or internal repo/proxy for the RPM
       # xtom.nl is the only mirror usable with crypto_policy: FUTURE
     - role: rhel8cis
-      rhel8cis_rule_1_1_1_3: false  # UDF file systems module required on Azure
-      rhel8cis_rule_5_3_4: false
-      rhel8cis_ssh_loglevel: VERBOSE
-      rhel8cis_remote_log_server: loghost
-      rhel8cis_crypto_policy: "{{ crypto_policy }}"
-      rhel8cis_auditd:
-        space_left_action: EMAIL
-        action_mail_acct: root
-        admin_space_left_action: HALT
-        max_log_file_action: rotate
-      allow_auditd_uid_user_exclusions: true
-      rhel8cis_auditd_uid_exclude:
-        - vagrant
-        - admin
+      tags: rhel8cis
+    - role: base_line
+      tags: base_line
+    - role: openssh
+      tags: openssh
 
 ...
