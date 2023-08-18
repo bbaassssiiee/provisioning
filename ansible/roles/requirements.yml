@@ -11,4 +11,3 @@ roles:
     name: openssh
   - src: https://github.com/dockpack/base_line.git
     name: base_line
-    version: lynis

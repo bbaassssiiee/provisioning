@@ -6,7 +6,7 @@ rhel8cis_rule_1_9:  # do not update ansible in the packer run
 rhel8cis_rule_5_3_4: false
 rhel8cis_ssh_loglevel: VERBOSE
 rhel8cis_remote_log_server: loghost
-rhel8cis_crypto_policy: "{{ crypto_policy }}"
+rhel8cis_crypto_policy: STRICT
 rhel8cis_auditd:
   space_left_action: EMAIL
   action_mail_acct: root
