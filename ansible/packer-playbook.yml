@@ -7,7 +7,7 @@
   gather_facts: true
 
   vars:
-    crypto_policy: DEFAULT
+    crypto_policy: STRICT
     # We would rather use FUTURE, but
     # pypi.python.org still uses 2048-bit RSA.
 
