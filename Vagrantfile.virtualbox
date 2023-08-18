@@ -92,7 +92,6 @@ ENV['KS_PASSWORD'] = "vagrant"
 
       server.vm.provision :ansible do |ansible|
         ansible.compatibility_mode = "2.0"
-        ansible.extra_vars = { ansible_python_interpreter: "/usr/bin/python3" }
         # Download dependencies
         ansible.galaxy_role_file = "ansible/roles/requirements.yml"
         ansible.galaxy_roles_path = "ansible/roles"
