@@ -2,17 +2,17 @@ ANSIBLE_DEBUG=1
 DISTRO ?= alma8
 
 lint:
+	packer validate .
 	vagrant validate
 	ansible-inventory --graph
 	ansible-playbook --syntax-check ansible/vagrant-playbook.yml
 	ansible-playbook --syntax-check ansible/packer-playbook.yml
 	ansible-lint ansible
-	packer validate ${DISTRO}.pkr.hcl
 
 prepare:
 	ansible-galaxy install -p ansible/roles -f -r ansible/roles/requirements.yml
 	ansible-galaxy collection install -r ansible/roles/requirements.yml
-	packer init --upgrade ${DISTRO}.pkr.hcl
+	packer init --upgrade .
 
 clean:
 	@vagrant destroy -f
@@ -27,7 +27,7 @@ firewall:
 .PHONY: packer
 packer:
 	choco install packer --version=1.8.4 -y
-	packer init --upgrade ${DISTRO}.pkr.hcl
+	packer init --upgrade .
 
 # Create image for Hyper-V
 output-${DISTRO}/${DISTRO}.x86_64.hyperv.box:
@@ -37,7 +37,6 @@ hyperv-image: output-${DISTRO}/${DISTRO}.x86_64.hyperv.box
 
 # Create image for VirtualBox
 output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box:
-	scripts/validate-iso.sh alma8.pkr.hcl
 	packer build --only virtualbox-iso.alma8 .
 .PHONY: virtualbox-image
 virtualbox-image: output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box
