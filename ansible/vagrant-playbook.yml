@@ -1,6 +1,16 @@
 #!/usr/bin/env ansible-playbook
 # Usage: ./ks-server.yml -i inventory -e main_user=vagrant -e main_password=vagrant
 ---
+- name: Harden machine
+  hosts: all:!localhost
+  become: true
+  gather_facts: true
+  tags:
+    - harden
+  roles:
+    - base_line
+    - openssh
+
 - name: Create Web Server
   hosts: web
   become: true
