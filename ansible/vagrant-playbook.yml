@@ -5,28 +5,36 @@
   hosts: all:!localhost
   become: true
   gather_facts: true
+  vars:
+    crypto_policy: 'FIPS:OSPP'
   tags:
     - harden
   roles:
+    - base_crontab
     - base_line
+    - base_nettime
     - openssh
 
 - name: Create Web Server
-  hosts: web
+  hosts: web_servers
   become: true
   gather_facts: true
+  tags:
+    - web
   roles:
-    - apache
+    - web
 
 - name: Create Proxy Server
-  hosts: proxy
+  hosts: proxy_servers
   become: true
   gather_facts: true
+  tags:
+    - proxy
   roles:
     - proxy
 
 - name: Create Kickstart server
-  hosts: kickstart
+  hosts: kickstart_servers
   become: true
   gather_facts: true
   vars:
@@ -40,3 +48,25 @@
     - tftp_setup
     - kickstart
     - dhcp_setup
+
+- name: Create Database Server
+  hosts: db_servers
+  become: true
+  gather_facts: true
+  tags:
+    - db
+  roles:
+    - base_postgres
+
+- name: Verify machines
+  hosts: all:!localhost
+  become: true
+  gather_facts: true
+  vars:
+    verify_state: true
+  tags:
+    - verify
+  tasks:
+    - include_role:
+        name: base_goss
+        tasks_from: verify

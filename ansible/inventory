@@ -9,6 +9,7 @@ ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
 proxy_servers
 kickstart_servers
 web_servers
+db_servers
 
 [kickstart_servers]
 kickstart ansible_host=192.168.56.30
@@ -18,3 +19,6 @@ proxy ansible_host=192.168.56.31
 
 [web_servers]
 web ansible_host=192.168.56.32
+
+[db_servers]
+db ansible_host=192.168.56.33
