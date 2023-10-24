@@ -1,0 +1,14 @@
+---
+file:
+  "{{ goss_test_directory }}/goss.yaml":
+    exists: true
+    mode: "0644"
+    owner: "{{ goss_user }}"
+    group: "{{ goss_user }}"
+    filetype: file
+  "{{ goss_path }}/goss":
+    exists: true
+    owner: "{{ goss_user }}"
+    group: "{{ goss_user }}"
+    mode: "0755"
+    sha256: "{{ goss[goss_version].sha256sum }}"

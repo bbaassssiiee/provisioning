@@ -17,15 +17,16 @@
 
   post_tasks:
 
-    - name: Run the audit and create a report.
+    - name: Run CIS oscap scan and create ~/report.html
       ansible.builtin.command:
-        oscap xccdf eval \
-          --report /tmp/report.html
-          --profile cis
-          /usr/share/xml/scap/ssg/content/ssg-almalinux8-ds.xml
+        oscap xccdf eval --profile cis \
+          --report ~/report.html \
+          --cpe /usr/share/xml/scap/ssg/content/ssg-almalinux8-cpe-dictionary.xml \
+          /usr/share/xml/scap/ssg/content/ssg-almalinux8-xccdf.xml
       changed_when: true
       no_log: false
-      ignore_errors: true
+      register: scan_return
+      failed_when: scan_return.stdout is not defined
 
     - name: Set permissions
       ansible.builtin.file:

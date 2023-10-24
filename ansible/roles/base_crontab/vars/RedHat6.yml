@@ -1,0 +1,7 @@
+---
+crond_service: crond
+crontab_packages:
+  - cronie
+  - cronie-noanacron
+  - crontabs
+...

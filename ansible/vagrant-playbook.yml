@@ -49,15 +49,6 @@
     - kickstart
     - dhcp_setup
 
-- name: Create Database Server
-  hosts: db_servers
-  become: true
-  gather_facts: true
-  tags:
-    - db
-  roles:
-    - base_postgres
-
 - name: Verify machines
   hosts: all:!localhost
   become: true
@@ -67,6 +58,7 @@
   tags:
     - verify
   tasks:
-    - include_role:
+    - name: Run base_goss role
+      ansible.builtin.include_role:
         name: base_goss
         tasks_from: verify

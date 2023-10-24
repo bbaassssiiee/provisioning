@@ -1,8 +1,10 @@
 ---
 # https://ansible-lint.readthedocs.io/en/latest/default_rules/
 exclude_paths:
-  - ./ansible/roles/rhel8cis
+  - ansible/roles/rhel8cis/
+  - ansible/roles/openssh/
 
 skip_list:
   - experimental  # all rules tagged as experimental
+  - var-naming[no-role-prefix]
 ...

@@ -1,0 +1,15 @@
+---
+nettime_user: _chrony
+nettime_group: _chrony
+nettime_config: /etc/chrony/chrony.conf
+nettime_driftfile: /var/lib/chrony/chrony.drift
+nettime_keyfile: /etc/chrony/chrony.keys
+nettime_service: chrony
+nettime_enabled: 'NTP service: active'
+nettime_synced: 'System clock synchronized: yes'
+nettime_packages:
+  - chrony
+firewall_package:
+  - ufw
+nettime_firewall: ufw
+...

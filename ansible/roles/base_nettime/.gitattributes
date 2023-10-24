@@ -1,0 +1,8 @@
+requirements.txt linguist-language=Python
+main.yml linguist-language=Ansible
+.github/workflows/molecule.yml linguist-language=GitHub
+molecule.yml linguist-language=Molecule
+.ansible-lint linguist-language=ansible-lint
+.later linguist-language=ansible-later
+test_*.yml linguist-language=Goss
+*.yml linguist-language=Ansible

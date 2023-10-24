@@ -5,10 +5,10 @@
   gather_facts: true
   become: true
   vars:
-    role_name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
+    this_role: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
 
   tasks:
     - name: Play the role
       ansible.builtin.include_role:
-        name: "{{ role_name }}"
+        name: "{{ this_role }}"
 ...

@@ -9,8 +9,6 @@ roles:
     name: rhel8cis
   - src: https://github.com/ansiblebook/ansible_role_ssh.git
     name: openssh
-  - src: https://github.com/playingfield/ansible_role_web.git
-    name: web
   - src: https://github.com/dockpack/base_line.git
     name: base_line
   - src: https://github.com/dockpack/gpg_agent.git
@@ -19,11 +17,5 @@ roles:
     name: base_nettime
   - src: https://github.com/dockpack/base_crontab.git
     name: base_crontab
-  - src: https://github.com/dockpack/base_etcd.git
-    name: base_etcd
-  - src: https://github.com/dockpack/base_postgres.git
-    name: base_postgres
-  - src: https://github.com/dockpack/base_postgres.git
-    name: base_amq
   - src: https://github.com/dockpack/base_goss.git
     name: base_goss

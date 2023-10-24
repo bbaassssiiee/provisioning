@@ -1,0 +1,15 @@
+ansible==7.0.0
+ansible-lint==6.21.1
+anyconfig>=0.10.0 # not directly required, pinned by Snyk to avoid a vulnerability
+attrs>=19.2.0
+docker>=4.3.1
+jmespath
+molecule==4.0.1
+molecule-docker==2.0.0
+molecule-vagrant==1.0.0
+pre-commit
+pylint
+rich==12.5.1
+setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
+tox
+yamllint==1.28.0

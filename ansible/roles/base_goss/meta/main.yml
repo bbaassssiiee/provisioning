@@ -1,0 +1,30 @@
+---
+# Standards: 0.2
+galaxy_info:
+  role_name: base_goss
+  namespace: dockpack
+  author: Sean Abbott & Bas Meijer
+  description: Install goss binary and ensure checksum
+
+  license: GPLv2
+
+  min_ansible_version: "2.9.27"
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - "vivid"
+    - name: Debian
+      versions:
+        - "stretch"
+        - "buster"
+    - name: EL
+      versions:
+        - "6"
+        - "7"
+        - "8"
+
+  galaxy_tags: []
+
+dependencies: []
+...

@@ -1,0 +1,46 @@
+---
+# Molecule test file created by base_nettime
+
+command:
+  chronyc -a 'burst 4/4':
+    exit-status: 0
+    stdout:
+      - 200 OK
+    stderr: []
+  chronyc sources:
+    exit-status: 0
+  timedatectl:
+    exit-status: 0
+    stdout:
+      - 'RTC in local TZ: no'
+    stderr: []
+file:
+  {{ nettime_config }}:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: []
+  {{ nettime_driftfile }}:
+    exists: true
+    owner: {{ nettime_user }}
+    group: {{ nettime_group }}
+    filetype: file
+    contains: []
+package:
+  {{ nettime_packages[0] }}:
+    installed: true
+service:
+  {{ nettime_service }}:
+    enabled: true
+    running: true
+process:
+   chronyd:
+    running: true
+user:
+  {{ nettime_user }}:
+    exists: true
+    groups:
+      - {{ nettime_group }}
+    home: /var/lib/chrony

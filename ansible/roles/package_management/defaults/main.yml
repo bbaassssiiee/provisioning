@@ -1,6 +1,19 @@
 ---
-artifactory_rpm_repo: 'almalinux-remote'
+
+yum_repofiles_unneeded:
+  - almalinux-nfv.repo
+  - almalinux-plus.repo
+  - almalinux-rt.repo
+  - almalinux-sap.repo
+  - almalinux-saphana.repo
+  - almalinux-ha.repo
+  - almalinux-resilientstorage.repo
+
+yum_repofiles_needed:
+  - almalinux.repo
+  - almalinux-powertools.repo
+
 sslverify: 'True'
 # yamllint disable rule:line-length
-repo_url: "https://{{ groups.artifactory_servers[0] }}/artifactory/{{ artifactory_rpm_repo }}"
+
 proxy_url: "{{ proxy_proto | default('http') }}://{{ proxy_user ~ ':' }}{{ proxy_password ~ '@' }}{{ proxy_host }}{{ ':' ~ proxy_port }}"

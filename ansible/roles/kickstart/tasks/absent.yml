@@ -8,7 +8,7 @@
 - name: Mount RHEL ISO
   when: not mount_dir.stat.exists
   become: true
-  ansible.builtin.mount:
+  ansible.posix.mount:
     path: "{{ web_mount_dir }}"
     src: "{{ installation_iso_image }}"
     opts: ro,loop

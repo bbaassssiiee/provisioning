@@ -1,0 +1,8 @@
+---
+file:
+  /usr/bin/gpg:
+    exists: true
+    owner: root
+    group: root
+    contains: []
+...

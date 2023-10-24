@@ -17,11 +17,11 @@
   ansible.builtin.file:
     path: "{{ web_mount_dir }}"
     state: directory
-    mode: 0755
+    mode: '0755'
 
 - name: Mount installation ISO
   become: true
-  ansible.builtin.mount:
+  ansible.posix.mount:
     path: "{{ web_mount_dir }}"
     src: "{{ installation_iso_image }}"
     opts: ro,loop
@@ -37,7 +37,7 @@
     state: directory
     owner: root
     group: apache
-    mode: 0755
+    mode: '0755'
 
 - name: Install kickstart file
   become: true
@@ -46,7 +46,7 @@
     dest: "{{ ks_dir }}/ks.cfg"
     owner: root
     group: apache
-    mode: 0640
+    mode: '0640'
 
 - name: Install yum repo file
   become: true
@@ -55,13 +55,14 @@
     dest: "{{ ks_dir }}/almalinux.repo"
     owner: root
     group: apache
-    mode: 0640
+    mode: '0640'
 
 - name: Download boot packages
   become: true
   ansible.builtin.get_url:
     url: "{{ item }}"
     dest: "{{ download_folder }}/"
+    mode: '0600'
   loop:
     - "{{ kickstart_grub_url }}"
     - "{{ kickstart_shim_url }}"
@@ -85,15 +86,15 @@
     state: directory
     owner: root
     group: tftpd
-    mode: 0755
+    mode: '0755'
 
 - name: Copy the EFI boot files
   become: true
   ansible.builtin.copy:
     remote_src: true
-    src: "{{ download_folder }}/{{ item  }}"
+    src: "{{ download_folder }}/{{ item }}"
     dest: "{{ tftpboot_folder }}/{{ item | basename }}"
-    mode: 0555
+    mode: '0555'
     group: tftpd
   loop:
     - boot/efi/EFI/BOOT/BOOTX64.EFI
@@ -107,7 +108,7 @@
     dest: "{{ tftpboot_folder }}/almalinux/"
     owner: root
     group: root
-    mode: 0555
+    mode: '0555'
 
 - name: Install initrd.img
   become: true
@@ -116,7 +117,7 @@
     dest: "{{ tftpboot_folder }}/almalinux/"
     owner: root
     group: root
-    mode: 0444
+    mode: '0444'
 
 - name: Install grub menu
   become: true
@@ -125,5 +126,5 @@
     dest: "{{ tftpboot_folder }}/grub.cfg"
     owner: root
     group: tftpd
-    mode: 0644
+    mode: '0644'
 ...

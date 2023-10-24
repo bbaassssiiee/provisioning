@@ -17,4 +17,3 @@ allow_auditd_uid_user_exclusions: true
 rhel8cis_auditd_uid_exclude:
   - vagrant
   - admin
-

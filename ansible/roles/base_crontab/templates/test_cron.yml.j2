@@ -1,0 +1,72 @@
+---
+# Goss test file created by base_crontab
+file:
+  /etc/at.allow:
+    exists: true
+    mode: "0600"
+    owner: root
+    group: root
+    filetype: file
+    contains: []
+  /etc/at.deny:
+    exists: false
+    contains: []
+  /etc/cron.allow:
+    exists: true
+    mode: "0600"
+    owner: root
+    group: root
+    filetype: file
+    contains: []
+  /etc/cron.d:
+    exists: true
+    mode: "0700"
+    owner: root
+    group: root
+    filetype: directory
+    contains: []
+  /etc/cron.daily:
+    exists: true
+    mode: "0700"
+    owner: root
+    group: root
+    filetype: directory
+    contains: []
+  /etc/cron.deny:
+    exists: false
+    contains: []
+  /etc/cron.hourly:
+    exists: true
+    mode: "0700"
+    owner: root
+    group: root
+    filetype: directory
+    contains: []
+  /etc/cron.monthly:
+    exists: true
+    mode: "0700"
+    owner: root
+    group: root
+    filetype: directory
+    contains: []
+  /etc/cron.weekly:
+    exists: true
+    mode: "0700"
+    owner: root
+    group: root
+    filetype: directory
+    contains: []
+  /etc/crontab:
+    exists: true
+    mode: "0600"
+    owner: root
+    group: root
+    filetype: file
+    contains: []
+package:
+  {{ crontab_packages[0] }}:
+    installed: true
+service:
+  {{ crond_service }}:
+    enabled: true
+    running: true

@@ -95,7 +95,8 @@
 - name: Install unit file
   ansible.builtin.template:
     src: squid.service.j2
-    dest: "/etc/systemd/system/squid.service"
+    dest: "/usr/lib/systemd/system/squid.service"
+    mode: '0644'
 
 - name: Enable squid
   ansible.builtin.systemd:
@@ -110,4 +111,5 @@
     dest: "{{ proxy_home }}/squid.conf"
     owner: "{{ proxy_user }}"
     group: "{{ proxy_group }}"
+    mode: '0644'
   notify: Restart proxy
