@@ -41,6 +41,11 @@ output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box:
 .PHONY: virtualbox-image
 virtualbox-image: output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box
 
+# Create image for VMWare
+.PHONY: vmware-image
+vmware-image:
+	packer build --only vmware-iso.alma8 --on-error=abort .
+
 # Load hyperv image into Vagrant
 .PHONY: hyperv-box
 hyperv-box: output-alma8/alma8.x86_64.hyperv.box

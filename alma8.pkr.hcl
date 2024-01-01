@@ -1,8 +1,24 @@
 packer {
   required_plugins {
+    azure = {
+      source  = "github.com/hashicorp/azure"
+      version = "~> 1"
+    }
+    ansible = {
+      source  = "github.com/hashicorp/ansible"
+      version = "~> 1"
+    }
+    vagrant = {
+      source  = "github.com/hashicorp/vagrant"
+      version = "~> 1"
+    }
     hyperv = {
-      version = "= 1.0.4"
-      source  = "github.com/hashicorp/hyperv"
+      source = "github.com/hashicorp/hyperv"
+      version = "~> 1"
+    }
+    vmware = {
+      version = "~> 1"
+      source = "github.com/hashicorp/vmware"
     }
   }
 }
@@ -36,7 +52,7 @@ source "azure-arm" "alma8" {
 source "hyperv-iso" "alma8" {
   boot_command = [
     "c<wait>",
-    "linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=AlmaLinux-8-7-x86_64-dvd ro ",
+    "linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=AlmaLinux-8-8-x86_64-dvd ro ",
     "inst.text biosdevname=0 net.ifnames=0 ",
     "inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter>",
     "initrdefi /images/pxeboot/initrd.img<enter>",
@@ -72,7 +88,7 @@ source "hyperv-iso" "alma8" {
 source "virtualbox-iso" "alma8" {
   boot_command = [
     "c<wait>",
-    "linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=AlmaLinux-8-7-x86_64-dvd ro ",
+    "linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=AlmaLinux-8-8-x86_64-dvd ro ",
     "inst.text biosdevname=0 net.ifnames=0 ",
     "inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter>",
     "initrdefi /images/pxeboot/initrd.img<enter>",
@@ -116,16 +132,37 @@ source "virtualbox-iso" "alma8" {
   vm_name                 = "alma8-vm"
 }
 
+source "vmware-iso" "alma8" {
+  boot_command = [
+    "<tab>",
+    "inst.text net.ifnames=0 inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg",
+    "<enter><wait>"
+  ]
+  boot_wait               = "5s"
+  cpus                    = 2
+  disk_size               = 65536
+  guest_os_type           = "Linux"
+  headless                = false
+  http_directory          = "kickstart"
+  iso_checksum            = "${var.iso_checksum}"
+  iso_urls                = ["${var.iso_url1}", "${var.iso_url2}"]
+  memory                  = 4096
+  ssh_username            = "root"
+  ssh_password            = "vagrant"
+  ssh_wait_timeout        = "10000s"
+  shutdown_command        = "shutdown -P now"
+}
+
 build {
-  sources = ["source.virtualbox-iso.alma8", "source.hyperv-iso.alma8", "source.azure-arm.alma8"]
+  sources = ["source.virtualbox-iso.alma8", "source.hyperv-iso.alma8", "source.vmware-iso.alma8", "source.azure-arm.alma8"]
 
   provisioner "shell" {
-    only            = ["hyperv-iso.alma8", "virtualbox-iso.alma8"]
+    only            = ["hyperv-iso.alma8", "virtualbox-iso.alma8","vmware-iso.alma8"]
     execute_command = "bash '{{ .Path }}'"
     script          = "scripts/vagrant.sh"
   }
   provisioner "shell" {
-    only            = ["hyperv-iso.alma8", "virtualbox-iso.alma8"]
+    only            = ["hyperv-iso.alma8", "virtualbox-iso.alma8","vmware-iso.alma8"]
     environment_vars = [
       "PROXY=${var.proxy_proto}://${var.proxy_user}:${var.proxy_password}@${var.proxy_host}:${var.proxy_port}"
     ]
