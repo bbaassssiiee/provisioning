@@ -1,6 +1,6 @@
 #!/bin/bash -ex
 # Install kickstart server on air-gapped AlmaLinux host
-# requires AlmaLinux-8.7-x86_64-dvd.iso in parent directory
+# requires AlmaLinux-8-latest-x86_64-dvd.iso in parent directory
 # Usage: bash install.sh <main_user> <main_password>
 
 # The main user will be allowed ssh access
@@ -12,7 +12,7 @@ INSTALL_DIR=/var/www/html/install
 sudo mkdir -p "$INSTALL_DIR"
 if [[ ! -f "$INSTALL_DIR/media.repo" ]]
 then
-    sudo mount -o loop ../AlmaLinux-8.7-x86_64-dvd.iso "$INSTALL_DIR"
+    sudo mount -o loop ../AlmaLinux-8-latest-x86_64-dvd.iso "$INSTALL_DIR"
 fi
 sudo rm -f /etc/yum.repos.d/*
 sudo cp kickstart/almalinux.repo /etc/yum.repos.d/almalinux.repo
