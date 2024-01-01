@@ -1,8 +1,0 @@
----
-cronjobs: []
-# root allways enabled
-# atd_allow_user:
-# crontab_allow_user
-atd_deny_user: ALL
-crontab_deny_user: ALL
-...
