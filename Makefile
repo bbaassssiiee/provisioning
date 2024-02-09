@@ -18,6 +18,7 @@ clean:
 	@vagrant destroy -f
 	@vagrant box remove ${DISTRO}/efi || /usr/bin/true
 	@rm -rf output-${DISTRO} .vagrant
+	@rm -f report.html
 
 .PHONY: firewall
 firewall:
@@ -93,3 +94,4 @@ hyperv: hyperv-box vagrant-up
 
 .PHONY: virtualbox
 virtualbox: clean virtualbox-box vagrant-up
+	vagrant scp :/tmp/report.html .

@@ -1,0 +1,13 @@
+#!/usr/bin/env ansible-playbook
+# Usage: ./ks-server.yml -i inventory -e main_user=vagrant -e main_password=vagrant
+---
+
+- name: Create Proxy Server
+  hosts: proxy_servers
+  become: true
+  gather_facts: true
+  tags:
+    - proxy
+  roles:
+    - proxy
+
