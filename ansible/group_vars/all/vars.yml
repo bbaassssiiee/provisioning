@@ -6,10 +6,5 @@ rhel9cis_rule_1_2_1: false
 # sudo password disabled for automation
 rhel9cis_rule_5_3_4: false
 
-rhel9cis_default_zone: drop
-rhel9cis_firewalld_ports:
-    - number: 22
-      protocol: tcp
-
 rhel9cis_crypto_policy: DEFAULT
 rhel9cis_crypto_policy_module: AD-SUPPORT
