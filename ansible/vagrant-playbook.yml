@@ -1,4 +1,4 @@
-#!/usr/bin/env ansible-playbook -K
+#!/usr/bin/env ansible-playbook
 ---
 
 - name: Security Audit
