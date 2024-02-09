@@ -90,8 +90,9 @@ azure-image:
 
 .PHONY: hyperv
 hyperv: hyperv-box vagrant-up
-	vagrant scp :/tmp/report.html .
+	vagrant scp proxy:/tmp/report.html .
 
 .PHONY: virtualbox
 virtualbox: clean virtualbox-box vagrant-up
-	vagrant scp :/tmp/report.html .
+	vagrant scp proxy:/tmp/report.html .
+	open report.html
