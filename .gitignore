@@ -12,3 +12,4 @@ report.html
 /RPM-GPG-KEY-AlmaLinux
 ansible/roles/rhel9cis
 ansible/collections/requirements.yml
+Vagrantfile
