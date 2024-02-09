@@ -5,15 +5,10 @@
 /boot/
 /etc/
 .pytest_cache
-output-alma8/
+output-alma9/
 packer_cache/
 report.html
 /CHECKSUM
 /RPM-GPG-KEY-AlmaLinux
-ansible/roles/rhel8cis
-ansible/roles/base_line/
-ansible/roles/base_crontab/
-ansible/roles/base_goss/
-ansible/roles/base_nettime/
-ansible/roles/openssh/
+ansible/roles/rhel9cis
 ansible/collections/requirements.yml

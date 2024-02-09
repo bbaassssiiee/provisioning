@@ -47,7 +47,7 @@ variable "iso_url2" {
 
 variable "iso_checksum" {
   type        = string
-  description = "https://mirrors.xtom.de/almalinux/8.9/isos/x86_64/CHECKSUM"
+  description = "https://mirrors.xtom.de/almalinux/9.3/isos/x86_64/CHECKSUM"
 }
 
 variable "client_id" {
@@ -95,7 +95,6 @@ variable "storage_account" {
   description = "make arm-storageaccount in Makefile"
   default     = "bogus_value"
 }
-
 
 variable "image" {
   type        = string

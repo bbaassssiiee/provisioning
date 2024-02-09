@@ -1,5 +1,5 @@
 ANSIBLE_DEBUG=1
-DISTRO ?= alma8
+DISTRO ?= alma9
 
 lint:
 	packer validate .
@@ -16,7 +16,7 @@ prepare:
 
 clean:
 	@vagrant destroy -f
-	@vagrant box remove alma8/efi || /usr/bin/true
+	@vagrant box remove ${DISTRO}/efi || /usr/bin/true
 	@rm -rf output-${DISTRO} .vagrant
 
 .PHONY: firewall
@@ -31,34 +31,34 @@ packer:
 
 # Create image for Hyper-V
 output-${DISTRO}/${DISTRO}.x86_64.hyperv.box:
-	packer build --only hyperv-iso.alma8 .
+	packer build --only hyperv-iso.${DISTRO} .
 .PHONY: hyperv-image
 hyperv-image: output-${DISTRO}/${DISTRO}.x86_64.hyperv.box
 
 # Create image for VirtualBox
 output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box:
-	packer build --only virtualbox-iso.alma8 .
+	packer build --only virtualbox-iso.${DISTRO} .
 .PHONY: virtualbox-image
 virtualbox-image: output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box
 
 output-${DISTRO}/${DISTRO}.x86_64.vmware.box:
-	packer build --only vmware-iso.alma8 --on-error=abort .
+	packer build --only vmware-iso.${DISTRO} --on-error=abort .
 # Create image for VMWare
 .PHONY: vmware-image
 vmware-image: output-${DISTRO}/${DISTRO}.x86_64.vmware.box
 
 .PHONY: vmware-box
 vmware-box:
-	vagrant box add --provider vmware_desktop --name alma8/bios output-${DISTRO}/${DISTRO}.x86_64.vmware.box
+	vagrant box add --provider vmware_desktop --name ${DISTRO}/bios output-${DISTRO}/${DISTRO}.x86_64.vmware.box
 # Load hyperv image into Vagrant
 .PHONY: hyperv-box
-hyperv-box: output-alma8/alma8.x86_64.hyperv.box
-	vagrant box add --provider hyperv --name alma8/efi output-${DISTRO}/${DISTRO}.x86_64.hyperv.box
+hyperv-box: output-${DISTRO}/${DISTRO}.x86_64.hyperv.box
+	vagrant box add --provider hyperv --name ${DISTRO}/efi output-${DISTRO}/${DISTRO}.x86_64.hyperv.box
 
 # Load virtualbox image into Vagrant
 .PHONY: virtualbox-box
 virtualbox-box: output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box
-	vagrant box add --provider virtualbox --name alma8/efi output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box
+	vagrant box add --provider virtualbox --name ${DISTRO}/efi output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box
 
 # Start VM with vagrant
 vagrant-up:
@@ -80,12 +80,12 @@ storage-account:
 # Create image for Azure
 .PHONY: azure-vm
 azure-vm:
-	az vm create --name alma8 --location westeurope --image /subscriptions/e754b34e-e957-489b-9698-0b07172e0f89/resourceGroups/VMImageResourceGroup/providers/Microsoft.Compute/images/almalinux8 --admin-username "${USER}" --plan-name 8-gen2 --plan-product almalinux --plan-publisher almalinux -g "${ARM_RESOURCE_GROUP}" --ssh-key-values "${HOME}/.ssh/id_rsa.pub" --size Standard_B2ms --nsg alma-nsg --public-ip-sku Standard
+	az vm create --name ${DISTRO} --location westeurope --image /subscriptions/e754b34e-e957-489b-9698-0b07172e0f89/resourceGroups/VMImageResourceGroup/providers/Microsoft.Compute/images/almalinux8 --admin-username "${USER}" --plan-name 8-gen2 --plan-product almalinux --plan-publisher almalinux -g "${ARM_RESOURCE_GROUP}" --ssh-key-values "${HOME}/.ssh/id_rsa.pub" --size Standard_B2ms --nsg alma-nsg --public-ip-sku Standard
 
 # Create image for Azure
 .PHONY: azure-image
 azure-image:
-	packer build --only azure-arm.alma8 .
+	packer build --only azure-arm.${DISTRO} .
 
 .PHONY: hyperv
 hyperv: hyperv-box vagrant-up

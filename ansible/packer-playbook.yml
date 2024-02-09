@@ -25,11 +25,7 @@
       repo_url: 'https://mirrors.xtom.nl/almalinux'
       # repo url is a mirror or internal repo/proxy for the RPM
       # xtom.nl is the only mirror usable with crypto_policy: FUTURE
-    - role: rhel8cis
-      tags: rhel8cis
-    - role: base_line
-      tags: base_line
-    - role: openssh
-      tags: openssh
+    - role: rhel9cis
+      tags: rhel9cis
 
 ...

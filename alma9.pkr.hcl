@@ -23,18 +23,18 @@ packer {
   }
 }
 
-source "azure-arm" "alma8" {
+source "azure-arm" "alma9" {
   azure_tags = {
     product = "${var.image}"
   }
   plan_info {
-    plan_name      = "8-gen2"
+    plan_name      = "9-gen2"
     plan_product   = "almalinux"
     plan_publisher = "almalinux"
   }
   image_offer                       = "almalinux"
   image_publisher                   = "almalinux"
-  image_sku                         = "8-gen2"
+  image_sku                         = "9-gen2"
   location                          = "${var.location}"
   managed_image_name                = "${var.image}"
   managed_image_resource_group_name = "${var.managed_image_resource_group_name}"
@@ -49,10 +49,10 @@ source "azure-arm" "alma8" {
 }
 
 # https://developer.hashicorp.com/packer/plugins/builders/hyperv/iso
-source "hyperv-iso" "alma8" {
+source "hyperv-iso" "alma9" {
   boot_command = [
     "c<wait>",
-    "linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=AlmaLinux-8-8-x86_64-dvd ro ",
+    "linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=AlmaLinux-9-x86_64-dvd ro ",
     "inst.text biosdevname=0 net.ifnames=0 ",
     "inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter>",
     "initrdefi /images/pxeboot/initrd.img<enter>",
@@ -81,14 +81,14 @@ source "hyperv-iso" "alma8" {
   ssh_username         = "root"
   ssh_wait_timeout     = "10000s"
   switch_name          = "Wi-Fi"
-  vm_name              = "alma8-vm"
+  vm_name              = "alma9-vm"
   vlan_id              = ""
 }
 
-source "virtualbox-iso" "alma8" {
+source "virtualbox-iso" "alma9" {
   boot_command = [
     "c<wait>",
-    "linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=AlmaLinux-8-8-x86_64-dvd ro ",
+    "linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=AlmaLinux-9-3-x86_64-dvd ro ",
     "inst.text biosdevname=0 net.ifnames=0 ",
     "inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter>",
     "initrdefi /images/pxeboot/initrd.img<enter>",
@@ -105,10 +105,10 @@ source "virtualbox-iso" "alma8" {
   guest_additions_mode     = "disable"
   hard_drive_interface     = "sata"
   hard_drive_nonrotational = true
-  headless                 = true
+  headless                 = false
   http_directory           = "kickstart"
   iso_checksum             = "${var.iso_checksum}"
-  iso_interface            = "ide"
+  iso_interface            = "sata"
   iso_urls                 = ["${var.iso_url1}", "${var.iso_url2}"]
   keep_registered          = false
   memory                   = 4096
@@ -123,16 +123,17 @@ source "virtualbox-iso" "alma8" {
     ["modifyvm", "{{.Name}}", "--firmware", "EFI"],
     ["modifyvm", "{{.Name}}", "--macaddress1", "auto"],
     ["modifyvm", "{{.Name}}", "--macaddress2", "00c0dedec0de"],
+    ["modifyvm", "{{.Name}}", "--nat-localhostreachable1", "on"],
     ["modifyvm", "{{.Name}}", "--usbehci", "on"],
   ]
   virtualbox_version_file = ".vbox_version"
   vrdp_bind_address       = "0.0.0.0"
   vrdp_port_min           = "5900"
   vrdp_port_max           = "5900"
-  vm_name                 = "alma8-vm"
+  vm_name                 = "alma9-vm"
 }
 
-source "vmware-iso" "alma8" {
+source "vmware-iso" "alma9" {
   boot_command = [
     "<tab>",
     "inst.text net.ifnames=0 inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg",
@@ -154,15 +155,15 @@ source "vmware-iso" "alma8" {
 }
 
 build {
-  sources = ["source.virtualbox-iso.alma8", "source.hyperv-iso.alma8", "source.vmware-iso.alma8", "source.azure-arm.alma8"]
+  sources = ["source.virtualbox-iso.alma9", "source.hyperv-iso.alma9", "source.vmware-iso.alma9", "source.azure-arm.alma9"]
 
   provisioner "shell" {
-    only            = ["hyperv-iso.alma8", "virtualbox-iso.alma8","vmware-iso.alma8"]
+    only            = ["hyperv-iso.alma9", "virtualbox-iso.alma9","vmware-iso.alma9"]
     execute_command = "bash '{{ .Path }}'"
     script          = "scripts/vagrant.sh"
   }
   provisioner "shell" {
-    only            = ["hyperv-iso.alma8", "virtualbox-iso.alma8","vmware-iso.alma8"]
+    only            = ["hyperv-iso.alma9", "virtualbox-iso.alma9","vmware-iso.alma9"]
     environment_vars = [
       "PROXY=${var.proxy_proto}://${var.proxy_user}:${var.proxy_password}@${var.proxy_host}:${var.proxy_port}"
     ]
@@ -183,7 +184,7 @@ build {
     playbook_file   = "./ansible/packer-playbook.yml"
   }
   provisioner "shell" {
-    only            = ["azure-arm.alma8"]
+    only            = ["azure-arm.alma9"]
     execute_command = "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'"
     inline = [
       "/usr/sbin/waagent -force -deprovision+user",
@@ -194,10 +195,10 @@ build {
 
   post-processors {
     post-processor "vagrant" {
-      except               = ["azure-arm.alma8"]
+      except               = ["azure-arm.alma9"]
       keep_input_artifact  = true
       compression_level    = 9
-      output               = "output-alma8/alma8.x86_64.{{.Provider}}.box"
+      output               = "output-alma9/alma9.x86_64.{{.Provider}}.box"
       vagrantfile_template = "Vagrantfile.template"
     }
   }
