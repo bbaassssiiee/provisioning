@@ -1,28 +1,6 @@
 #!/usr/bin/env ansible-playbook
 # Usage: ./ks-server.yml -i inventory -e main_user=vagrant -e main_password=vagrant
 ---
-- name: Harden machine
-  hosts: all:!localhost
-  become: true
-  gather_facts: true
-  vars:
-    crypto_policy: 'FIPS:OSPP'
-  tags:
-    - harden
-  roles:
-    - base_crontab
-    - base_line
-    - base_nettime
-    - openssh
-
-- name: Create Web Server
-  hosts: web_servers
-  become: true
-  gather_facts: true
-  tags:
-    - web
-  roles:
-    - web
 
 - name: Create Proxy Server
   hosts: proxy_servers
@@ -48,17 +26,3 @@
     - tftp_setup
     - kickstart
     - dhcp_setup
-
-- name: Verify machines
-  hosts: all:!localhost
-  become: true
-  gather_facts: true
-  vars:
-    verify_state: true
-  tags:
-    - verify
-  tasks:
-    - name: Run base_goss role
-      ansible.builtin.include_role:
-        name: base_goss
-        tasks_from: verify
