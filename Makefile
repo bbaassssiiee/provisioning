@@ -93,4 +93,3 @@ hyperv: hyperv-box vagrant-up
 
 .PHONY: virtualbox
 virtualbox: clean virtualbox-box vagrant-up
-	vagrant scp :/tmp/report.html .

@@ -5,7 +5,7 @@ Vagrant.configure(2) do |config|
 
 ENV['KS_USER'] = "vagrant"
 ENV['KS_PASSWORD'] = "vagrant"
-  # Install required plugins
+# Install required plugins
 
   required_plugins = %w( vagrant-scp )
   plugin_installed = false
@@ -26,36 +26,22 @@ ENV['KS_PASSWORD'] = "vagrant"
     config.vbguest.auto_update = false
   end
 
-  config.vm.box = "alma8/efi"
+  config.vm.box = "alma9/efi"
   config.vm.box_check_update = false
   config.ssh.insert_key = false
 
   cluster = {
     "kickstart" => { :autostart => true, :mac => "00-C0-DE-DE-C0-DE", :cpus => 2, :mem => 4096},
-    "proxy" => { :autostart => true, :mac => "00-15-5D-C0-FF-EE", :cpus => 2, :mem => 4096  },
+    "proxy" => { :autostart => true, primary: true,:mac => "00-15-5D-C0-FF-EE", :cpus => 2, :mem => 4096  },
     "web" => { :autostart => false, :mac => "00-15-5D-DE-CA-FE", :cpus => 2, :mem => 4096, },
   }
   cluster.each_with_index do |(hostname, params), index|
     config.vm.define hostname, autostart: params[:autostart] do |server|
       server.vm.hostname = hostname
-      #server.vm.network "private_network", type: "dhcp", bridge: "Default Switch"
       server.vm.network "private_network", ip: "192.168.56.3#{index}"
       # server.vm.network "public_network", type: "dhcp", bridge: "Wi-Fi"
       server.vm.synced_folder "/Users/Shared", "/vagrant", id: "vagrant-root", disabled: true
-      server.vm.provider "hyperv" do |hyperv|
-        hyperv.cpus = params[:cpus]
-        hyperv.memory = params[:mem]
-        hyperv.mac = params[:mac]
-        hyperv.vmname = hostname
-        hyperv.enable_virtualization_extensions = true
-        hyperv.vm_integration_services = {
-          guest_service_interface: true,
-          heartbeat: true,
-          shutdown: true,
-          time_synchronization: true,
-        }
-        hyperv.linked_clone = true
-      end
+
       server.vm.provider "virtualbox" do |virtualbox|
 
         virtualbox.name = hostname
@@ -98,7 +84,6 @@ ENV['KS_PASSWORD'] = "vagrant"
         ansible.playbook = "ansible/vagrant-playbook.yml"
         ansible.groups = {
           "kickstart" => ["kickstart"],
-          "web_servers" => ["web"],
           "proxy" => ["proxy"]
         }
         ansible.galaxy_roles_path = "ansible/roles"
