@@ -1,19 +1,18 @@
 ---
 
-yum_repofiles_unneeded:
-  - almalinux-nfv.repo
-  - almalinux-plus.repo
-  - almalinux-rt.repo
-  - almalinux-sap.repo
-  - almalinux-saphana.repo
-  - almalinux-ha.repo
-  - almalinux-resilientstorage.repo
+# Enable dnf-automatic for security updates
+automatic_updates: true
+upgrade_type: security
 
-yum_repofiles_needed:
-  - almalinux.repo
-  - almalinux-powertools.repo
+# Ensure value is single-quoted
+apply_updates: 'yes'
+# We install the dnf-automatic-install.timer which overrides download_updates
+download_updates: 'no'
+random_sleep: 30
+emit_via: stdio
 
 sslverify: 'True'
 # yamllint disable rule:line-length
 
 proxy_url: "{{ proxy_proto | default('http') }}://{{ proxy_user ~ ':' }}{{ proxy_password ~ '@' }}{{ proxy_host }}{{ ':' ~ proxy_port }}"
+

@@ -1,52 +1,46 @@
 ---
 
-- name: Re-configure for proxied use
-  when:
-    - proxy_host is defined
-    - proxy_host | length > 3
+- name: Setup GPG check for AlmaLinux
   block:
-    - name: Configure proxy for package management
-      environment: "{{ proxy_env | default(omit) }}"
+    - name: Copy GPG key
+      ansible.builtin.copy:
+        src: RPM-GPG-KEY-AlmaLinux-9
+        dest: /etc/pki/rpm-gpg/
+        mode: '0644'
+    - name: Import GPG key
+      ansible.builtin.rpm_key:
+        key: /etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux-9
+
+- name: List reposities
+  ansible.builtin.command: yum repolist  # noqa: command-instead-of-module
+  changed_when: false
+  register: my_repolist
+
+- name: Report enabled reposities
+  ansible.builtin.debug:
+    msg: "{{ my_repolist.stdout_lines }}"
+    verbosity: 1
+
+- name: Enable daily security updates
+  when: automatic_updates | bool
+  block:
+
+    - name: Install dnf-automatic package
+      ansible.builtin.dnf:
+        name: dnf-automatic
+        state: present
+
+    - name: Create dnf-automatic configuration
       ansible.builtin.template:
-        src: dnf.conf.j2
-        dest: /etc/dnf/dnf.conf
+        src: automatic.conf.j2
+        dest: /etc/dnf/automatic.conf
         owner: root
         group: root
-        mode: '0600'
-      no_log: false
+        mode: 0644
 
-    - name: Configure proxy for pip
-      environment: "{{ proxy_env | default(omit) }}"
-      ansible.builtin.template:
-        src: pip.conf.j2
-        dest: /etc/pip.conf
-        owner: root
-        group: root
-        mode: '0600'
-      no_log: false
-
-    - name: Disable unneeded repo files
-      ansible.builtin.lineinfile:
-        path: "/etc/yum.repos.d/{{ item }}"
-        regexp: '^enabled=*'
-        line: 'enabled=0'
-        mode: '0600'
-      loop: "{{ yum_repofiles_unneeded }}"
-
-    - name: Enable needed repo files
-      ansible.builtin.lineinfile:
-        path: "/etc/yum.repos.d/{{ item }}"
-        regexp: '^enabled=*'
-        line: 'enabled=1'
-        mode: '0600'
-      loop: "{{ yum_repofiles_unneeded }}"
-
-    - name: Point repo files to repo_url
-      when: repo_url is defined
-      ansible.builtin.template:
-        src: "{{ item }}.j2"
-        dest: "/etc/yum.repos.d/{{ item }}"
-        owner: root
-        group: root
-        mode: '0600'
-      loop: "{{ yum_repofiles_needed }}"
+    - name: Install dnf-automatic-install timer
+      ansible.builtin.systemd:
+        name: dnf-automatic-install.timer
+        daemon_reload: true
+        state: started
+        enabled: true

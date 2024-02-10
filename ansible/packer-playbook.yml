@@ -23,6 +23,7 @@
   roles:
     - role: package_management
       repo_url: 'https://mirrors.xtom.nl/almalinux'
+      tags: package_management
       # repo url is a mirror or internal repo/proxy for the RPM
       # xtom.nl is the only mirror usable with crypto_policy: FUTURE
     - role: rhel9cis
