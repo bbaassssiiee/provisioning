@@ -11,6 +11,7 @@ rhel8cis_allowed_crypto_policies: FIPS
 rhel8cis_crypto_policy: FIPS
 rhel8cis_auditd:
   space_left_action: EMAIL
+  disk_full_action: EMAIL
   action_mail_acct: root
   admin_space_left_action: HALT
   max_log_file_action: rotate

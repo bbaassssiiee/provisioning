@@ -11,8 +11,6 @@ roles:
     name: openssh
   - src: https://github.com/dockpack/base_line.git
     name: base_line
-  - src: https://github.com/dockpack/gpg_agent.git
-    name: gpg_agent
   - src: https://github.com/dockpack/base_nettime.git
     name: base_nettime
   - src: https://github.com/dockpack/base_crontab.git

@@ -1,15 +1,15 @@
 packer {
   required_plugins {
-    azure = {
-      source  = "github.com/hashicorp/azure"
-      version = "~> 1"
-    }
     ansible = {
       source  = "github.com/hashicorp/ansible"
       version = "~> 1"
     }
     vagrant = {
       source  = "github.com/hashicorp/vagrant"
+      version = "~> 1"
+    }
+    azure = {
+      source  = "github.com/hashicorp/azure"
       version = "~> 1"
     }
     hyperv = {
@@ -52,9 +52,9 @@ source "azure-arm" "alma8" {
 source "hyperv-iso" "alma8" {
   boot_command = [
     "c<wait>",
-    "linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=AlmaLinux-8-8-x86_64-dvd ro ",
-    "inst.text biosdevname=0 net.ifnames=0 ",
-    "inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks8.cfg<enter>",
+    "linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=AlmaLinux-8-10-x86_64-dvd ro ",
+    "inst.text ",
+    "inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter>",
     "initrdefi /images/pxeboot/initrd.img<enter>",
     "boot<enter><wait>"
   ]
@@ -74,8 +74,8 @@ source "hyperv-iso" "alma8" {
   iso_checksum         = "${var.iso_checksum}"
   iso_urls             = ["${var.iso_url1}", "${var.iso_url2}"]
   mac_address          = "00c0dedec0de"
-  memory               = 2048
-  shutdown_command     = "sudo -S shutdown -P now"
+  memory               = 4096
+  shutdown_command     = "shutdown -P now"
   shutdown_timeout     = "30m"
   ssh_password         = "vagrant"
   ssh_username         = "root"
@@ -163,22 +163,15 @@ build {
   }
   provisioner "shell" {
     only            = ["hyperv-iso.alma8", "virtualbox-iso.alma8","vmware-iso.alma8"]
-    environment_vars = [
-      "PROXY=${var.proxy_proto}://${var.proxy_user}:${var.proxy_password}@${var.proxy_host}:${var.proxy_port}"
-    ]
     execute_command = "{{ .Vars }} bash '{{ .Path }}'"
     script = "scripts/ansible.sh"
   }
   provisioner "ansible-local" {
     extra_arguments = [ "-vv",
       "-e", "ansible_python_interpreter=/usr/libexec/platform-python",
-      "-e", "proxy_proto=${var.proxy_proto}",
-      "-e", "proxy_host=${var.proxy_host}",
-      "-e", "proxy_port=${var.proxy_port}",
-      "-e", "proxy_user=${var.proxy_user}",
-      "-e", "proxy_password=${var.proxy_password}", ]
+      ]
     galaxy_file     = "./ansible/roles/requirements.yml"
-    galaxy_command  = "${var.https_proxy} ansible-galaxy"
+    galaxy_command  = "ansible-galaxy"
     playbook_dir    = "./ansible"
     playbook_file   = "./ansible/packer-playbook.yml"
   }
