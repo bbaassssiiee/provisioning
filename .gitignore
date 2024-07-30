@@ -10,6 +10,8 @@ packer_cache/
 report.html
 /CHECKSUM
 /RPM-GPG-KEY-AlmaLinux
+# symlink provider-specific Vagrantfile
+/Vagrantfile
 ansible/roles/rhel8cis
 ansible/roles/base_line/
 ansible/roles/base_crontab/

@@ -54,7 +54,7 @@ source "hyperv-iso" "alma8" {
     "c<wait>",
     "linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=AlmaLinux-8-8-x86_64-dvd ro ",
     "inst.text biosdevname=0 net.ifnames=0 ",
-    "inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter>",
+    "inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks8.cfg<enter>",
     "initrdefi /images/pxeboot/initrd.img<enter>",
     "boot<enter><wait>"
   ]
@@ -90,7 +90,7 @@ source "virtualbox-iso" "alma8" {
     "c<wait>",
     "linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=AlmaLinux-8-8-x86_64-dvd ro ",
     "inst.text biosdevname=0 net.ifnames=0 ",
-    "inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter>",
+    "inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks8.cfg<enter>",
     "initrdefi /images/pxeboot/initrd.img<enter>",
     "boot<enter><wait>"
   ]
@@ -135,7 +135,7 @@ source "virtualbox-iso" "alma8" {
 source "vmware-iso" "alma8" {
   boot_command = [
     "<tab>",
-    "inst.text net.ifnames=0 inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg",
+    "inst.text net.ifnames=0 inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks8.cfg",
     "<enter><wait>"
   ]
   boot_wait               = "5s"
