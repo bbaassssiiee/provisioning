@@ -49,16 +49,16 @@ vmware-image: output-${DISTRO}/${DISTRO}.x86_64.vmware.box
 
 .PHONY: vmware-box
 vmware-box:
-	vagrant box add --provider vmware_desktop --name alma8/bios output-${DISTRO}/${DISTRO}.x86_64.vmware.box
+	vagrant box add --provider vmware_desktop --name ansiblebook/alma8 output-${DISTRO}/${DISTRO}.x86_64.vmware.box
 # Load hyperv image into Vagrant
 .PHONY: hyperv-box
 hyperv-box: output-alma8/alma8.x86_64.hyperv.box
-	vagrant box add --provider hyperv --name alma8/efi output-${DISTRO}/${DISTRO}.x86_64.hyperv.box
+	vagrant box add --provider hyperv --name ansiblebook/alma8 output-${DISTRO}/${DISTRO}.x86_64.hyperv.box
 
 # Load virtualbox image into Vagrant
 .PHONY: virtualbox-box
 virtualbox-box: output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box
-	vagrant box add --provider virtualbox --name alma8/efi output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box
+	vagrant box add --provider virtualbox --name ansiblebook/alma8 output-${DISTRO}/${DISTRO}.x86_64.virtualbox.box
 
 # Start VM with vagrant
 vagrant-up:

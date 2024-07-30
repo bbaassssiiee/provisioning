@@ -26,7 +26,7 @@ ENV['KS_PASSWORD'] = "vagrant"
     config.vbguest.auto_update = false
   end
 
-  config.vm.box = "alma8/efi"
+  config.vm.box = "ansiblebook/alma8"
   config.vm.box_check_update = false
   config.ssh.insert_key = false
 
